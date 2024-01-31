@@ -3,15 +3,10 @@ package engine.graphics;
 import engine.maths.*;
 import engine.utils.FileUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL43;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class Shader {
     private String vertFile, fragFile;

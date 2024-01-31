@@ -6,7 +6,9 @@ import engine.graphics.Shader;
 import engine.objects.GameObject;
 import engine.objects.Light;
 import main.main;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL30;
 
 import java.util.List;
 import java.util.Map;
@@ -14,7 +16,6 @@ import java.util.Map;
 public class GameObjectRenderer implements IGameObjectRenderer {
     private Shader shader;
     private Window window;
-    private int arrayID;
 
     public GameObjectRenderer(Window window, Shader shader) {
         this.shader = shader;

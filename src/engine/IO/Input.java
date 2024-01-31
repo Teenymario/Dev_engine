@@ -2,8 +2,6 @@ package engine.IO;
 
 import org.lwjgl.glfw.*;
 
-import java.io.IOException;
-
 public class Input {
     private static boolean[] keys = new boolean[GLFW.GLFW_KEY_LAST];
     private static boolean[] buttons = new boolean[GLFW.GLFW_MOUSE_BUTTON_LAST];

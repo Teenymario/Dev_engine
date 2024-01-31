@@ -6,15 +6,15 @@ import engine.graphics.Mesh;
 import engine.graphics.Shader;
 import engine.objects.Light;
 import main.main;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL30;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class TerrainRenderer implements ITerrainRenderer {
     private Shader shader;
     private Window window;
-    private int arrayID;
 
     public TerrainRenderer(Window window, Shader shader) {
         this.shader = shader;
@@ -40,25 +40,6 @@ public class TerrainRenderer implements ITerrainRenderer {
         GL30.glEnableVertexAttribArray(2); //Enable the normals attribute
         GL30.glEnableVertexAttribArray(3); //Enable the materials attribute
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, mesh.ibo); //Bind the indices used to connect vertices
-
-
-        //Texture mappings
-        for (int i = 0; i < mesh.textures(); i++) {
-            int textureUnit = GL20.GL_TEXTURE0 + i;
-
-            // Activate texture unit
-            GL20.glActiveTexture(textureUnit);
-
-            // Bind the current texture to the active texture unit
-            GL20.glBindTexture(GL20.GL_TEXTURE_2D, mesh.textureIDs()[i]);
-
-            // Set the uniform value for the current texture unit
-            int location = shader.getUniformLoc("textureSampler" + i);
-            GL20.glUniform1i(location, i);
-        }
-        //Texture mappings
-
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
         shader.bind(); //Bind the shader to the gpu
     }
 
@@ -81,6 +62,12 @@ public class TerrainRenderer implements ITerrainRenderer {
         shader.setUniform("lightCol", light.color);
         shader.setUniform("skyColor", window.background);
         shader.setUniform("materials", main.meshes.get(terrain.meshID).materials);
+        for (int i = 0; i < main.meshes.get(terrain.meshID).textures(); i++) {
+            GL30.glActiveTexture(GL30.GL_TEXTURE0 + i);
+            GL30.glBindTexture(GL30.GL_TEXTURE_2D, main.meshes.get(terrain.meshID).textureIDs()[i]);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+            shader.setUniform("textureSampler[" + i + "]", i);
+        }
     }
 
     public Shader getShader() {

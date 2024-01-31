@@ -11,11 +11,15 @@ public class Light {
         this.color = color;
     }
 
-    public void setPos(Vector3f pos) {
-        this.pos = pos;
+    public void setPos(float x, float y, float z) {
+        this.pos.x = x;
+        this.pos.y = y;
+        this.pos.z = z;
     }
 
-    public void setColor(Vector3f color) {
-        this.color = color;
+    public void setColor(float r, float g, float b) {
+        this.color.x = r;
+        this.color.y = g;
+        this.color.z = b;
     }
 }
