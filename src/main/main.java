@@ -60,7 +60,7 @@ public class main implements Runnable {
     public void init() {
         System.out.println("Initializing game");
         window = new Window(WIDTH, HEIGHT, "game");
-        window.setBackgroundColor(0, 0, 0);
+        window.setBackgroundColor(1, 1, 1);
         window.create();
 
         objShader = new Shader("/shaders/objVert.glsl", "/shaders/objFrag.glsl");
@@ -81,10 +81,12 @@ public class main implements Runnable {
         //Meshes
 
         //GameObjects
-        object = new GameObject(0, new Vector3f(0, 0.5f, -1), new Vector3f(0, 0, 0), new Vector3f(2, 2, 2));
+        object = new GameObject(0, new Vector3f(0, 0.5f, -1), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
         camera = new Camera(new Vector3f(0, 1, 0), new Vector3f(0, 1, 0));
         light = new Light(new Vector3f(0, 1, 1), new Vector3f(1, 1, 1));
         lightCube = new GameObject(1, light.pos, new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+
+
 
         terrains.add(new Terrain(0, 0, "/textures/grass_top.png"));
         //terrains.add(new Terrain(1, 0, "/textures/grass_top.png"));
@@ -92,7 +94,7 @@ public class main implements Runnable {
 
         objectMasterList.add(object);
         objectMasterList.add(lightCube);
-        genObjects(0);
+        //genObjects(0);
 
         for(GameObject object : objectMasterList) {
             masterRenderer.processObject(object);
@@ -118,7 +120,15 @@ public class main implements Runnable {
                 camera.setPos(new Vector3f(0, 1, 0));
             }
             if(Input.isKeyDown(GLFW.GLFW_KEY_F5)) thirdPerson = !thirdPerson;
-            if(Input.isKeyDown(GLFW.GLFW_KEY_F6)) lightLocked = !lightLocked;
+            if(Input.isKeyDown(GLFW.GLFW_KEY_F6)) {
+                lightLocked = !lightLocked;
+                if(lightLocked) {
+                    objectMasterList.get(1).setScale(0, 0, 0);
+                } else {
+                    objectMasterList.get(1).setScale(1, 1, 1);
+                    objectMasterList.get(1).setPos(light.pos.x, light.pos.y, light.pos.z);
+                }
+            }
             if(Input.isKeyDown(GLFW.GLFW_KEY_Q)) speedModifier = speedModifier * 1.02f;
             if(Input.isKeyDown(GLFW.GLFW_KEY_E)) speedModifier =  speedModifier / 1.02f;
             sprinting = Input.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL);
@@ -149,9 +159,8 @@ public class main implements Runnable {
             }
             if(lightLocked) {
                 light.pos.x = camera.pos.x;
-                light.pos.y = camera.pos.y + 0.5f;
+                light.pos.y = camera.pos.y;
                 light.pos.z = camera.pos.z;
-                objectMasterList.get(1).setPos(light.pos.x, light.pos.y, light.pos.z);
             }
             update();
             render();

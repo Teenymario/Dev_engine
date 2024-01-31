@@ -77,6 +77,7 @@ public class Camera {
     }
 
     public void update(GameObject target) {
+        boolean updateMatrix = false;
         newX = Input.getMouseX();
         newY = Input.getMouseY();
         System.out.println(newX);
@@ -88,6 +89,7 @@ public class Camera {
             vertAngle -= dy * sensitivity;
             horizAngle += dx * sensitivity;
             vertAngle = Math.max(-90, Math.min(90, vertAngle));
+            updateMatrix = true;
         }
         if(Input.isButtonDown(GLFW.GLFW_MOUSE_BUTTON_RIGHT)) {
             if(distance > 0) {
@@ -95,6 +97,7 @@ public class Camera {
             } else {
                 distance = 0.1f;
             }
+            updateMatrix = true;
         }
 
         float horizontal = (float) (distance * Math.cos(Math.toRadians(vertAngle)));
@@ -109,6 +112,10 @@ public class Camera {
 
         rot.x = vertAngle;
         rot.y = -horizAngle;
+
+        if(updateMatrix) {
+            this.viewMatrix = Matrix4f.view(pos, rot);
+        }
 
         oldX = newX;
         oldY = newY;

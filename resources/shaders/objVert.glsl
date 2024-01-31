@@ -17,7 +17,7 @@ uniform mat4 view;
 uniform mat4 project;
 uniform vec3 lightPos;
 
-const float density = 0.007;
+const float density = 0.07;
 const float gradient = 1.5;
 
 void main() {
