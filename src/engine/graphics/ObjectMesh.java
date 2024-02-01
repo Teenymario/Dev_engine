@@ -27,7 +27,7 @@ public class ObjectMesh {
         //Mesh data
 
         //Materials
-        String mtlPath = "";
+        String mtlPath;
         int curMtl = 0;
         Map<String, Integer> materialList = new HashMap<>();
         Map<String, int[]> textureList = new HashMap<>();
@@ -104,7 +104,6 @@ public class ObjectMesh {
                                         break;
                                 }
                             }
-                            mtlReader.close();
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -146,7 +145,7 @@ public class ObjectMesh {
                             Vector2f currentTex = texts.get(Integer.parseInt(vertexData[i][1]) - 1);
                             Vector3f curNorm = norms.get(Integer.parseInt(vertexData[i][2]) - 1);
 
-                            while (curVert >= vertexList.size()) {
+                            while (curVert > vertexList.size() - 1) {
                                 vertexList.add(null);
                             }
 
@@ -154,9 +153,7 @@ public class ObjectMesh {
                         }
                         break;
                 }
-                tokens = null;
             }
-            reader.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

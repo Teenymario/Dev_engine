@@ -35,9 +35,7 @@ vec4 defineColor(int materialID) {
     float brightness = max(nDotL, 0.1);
     vec3 diffuse = vec3(materials[materialID * 16 + 7], materials[materialID * 16 + 8], materials[materialID * 16 + 9]) * lightCol * brightness;
 
-    vec3 unitToCamVec = normalize(toCamVec);
-    vec3 reflectLightDir = reflect(-unitLightVec, unitNormal);
-    float specularFactor = dot(unitToCamVec, reflectLightDir);
+    float specularFactor = dot(normalize(toCamVec), reflect(-unitLightVec, unitNormal));
     specularFactor = max(specularFactor, 0.0);
     float dampedFactor = pow(specularFactor, materials[materialID * 16 + 2]);
     vec3 specular = vec3(materials[materialID * 16 + 10], materials[materialID * 16 + 11], materials[materialID * 16 + 12]) * dampedFactor * lightCol;
@@ -46,7 +44,6 @@ vec4 defineColor(int materialID) {
 }
 
 void main() {
-
     int materialID = int(fmaterialID + 0.5);
 
     if(materials[materialID * 16] != -1) {

@@ -60,7 +60,7 @@ public class main implements Runnable {
     public void init() {
         System.out.println("Initializing game");
         window = new Window(WIDTH, HEIGHT, "game");
-        window.setBackgroundColor(1, 1, 1);
+        window.setBackgroundColor(0, 0, 0);
         window.create();
 
         objShader = new Shader("/shaders/objVert.glsl", "/shaders/objFrag.glsl");
@@ -94,7 +94,6 @@ public class main implements Runnable {
 
         objectMasterList.add(object);
         objectMasterList.add(lightCube);
-        //genObjects(0);
 
         for(GameObject object : objectMasterList) {
             masterRenderer.processObject(object);
@@ -206,13 +205,6 @@ public class main implements Runnable {
         objShader.destroy();
         masterRenderer.destroy();
         System.out.println("Goodbye :)");
-    }
-
-    public void genObjects(int amt) {
-        for(int i = 2; i < amt; i++) {
-            int min = 5, max = 15;
-            objectMasterList.add(new GameObject(0, new Vector3f((float) (min + (Math.random() * max)), (float) (min + (Math.random() * max)), (float) (min + (Math.random() * max))), new Vector3f((float) (Math.random() * 360) + 1, (float) (Math.random() * 360) + 1, (float) (Math.random() * 360) + 1), new Vector3f(1, 1, 1)));
-        }
     }
 
     public static void main(String[] args) {
