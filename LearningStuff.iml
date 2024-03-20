@@ -74,5 +74,9 @@
         <SOURCES />
       </library>
     </orderEntry>
+    <orderEntry type="library" name="asm-9.6" level="project" />
+    <orderEntry type="library" name="slick-util" level="project" />
+    <orderEntry type="library" name="LWJGL" level="project" />
+    <orderEntry type="library" name="agent" level="project" />
   </component>
 </module>

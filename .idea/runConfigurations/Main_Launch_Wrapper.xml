@@ -1,0 +1,9 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Main Launch Wrapper" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="main.main" />
+    <module name="LearningStuff" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -1,0 +1,10 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="External Launch Wrapper" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="asm.externalLaunchwrapper" />
+    <module name="LearningStuff" />
+    <option name="VM_PARAMETERS" value="-javaagent:&quot;agent.jar&quot;" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

@@ -175,7 +175,6 @@ public class main implements Runnable {
             GLFW.glfwPollEvents();
             window.swapBuffers();
         }
-        System.out.println(counter);
         close();
     }
 
