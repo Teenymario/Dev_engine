@@ -15,6 +15,10 @@ public class Vertex {
         this.material = material;
     }
 
+    public String print() {
+        return "pos: {" + pos.print() + "} | normals: {" + normal.print() + "} | texts: {" + textureCoord.print() + "}";
+    }
+
     public Vector3f pos() {
         return pos;
     }

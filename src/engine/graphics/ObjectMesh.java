@@ -15,9 +15,6 @@ import java.util.Map;
 public class ObjectMesh {
 
     public static Mesh construct(String objPath) {
-        String curObj = "";
-        String curSmoothing = "";
-
         //Mesh data
         List<Vector3f> verts = new ArrayList<>();
         List<Vector3f> norms = new ArrayList<>();
@@ -39,14 +36,14 @@ public class ObjectMesh {
         //Reader variables
         String line;
         String[] currentLine;
-        String[][] vertexData;
+        String[][] vertexData = new String[3][3];
         String[] tokens;
         //Reader variables
 
         //Obj file loader
         try (BufferedReader reader = new BufferedReader(new FileReader(objPath))) {
             while((line = reader.readLine()) != null) {
-                tokens = line.split("\\s+");
+                tokens = line.split(" ");
 
                 switch(tokens[0]) {
                     case "mtllib":
@@ -58,7 +55,7 @@ public class ObjectMesh {
                         //Mtl file loader
                         try (BufferedReader mtlReader = new BufferedReader(new FileReader(mtlPath))) {
                             while ((line = mtlReader.readLine()) != null) {
-                                tokens = line.split("\\s+");
+                                tokens = line.split(" ");
 
                                 switch(tokens[0]) {
                                     case "newmtl":
@@ -112,9 +109,7 @@ public class ObjectMesh {
 
                         break;
                     case "o":
-                        curObj = tokens[1];
                         curMtl = 0;
-                        curSmoothing = "";
                         System.gc();
                         break;
                     case "v":
@@ -129,27 +124,19 @@ public class ObjectMesh {
                     case "usemtl":
                         curMtl = materialList.get(tokens[1]);
                         break;
-                    case "s":
-                        curSmoothing = tokens[1];
-                        break;
                     case "f":
                         currentLine = line.split(" ");
-                        vertexData = new String[3][3];
                         vertexData[0] = currentLine[1].split("/");
                         vertexData[1] = currentLine[2].split("/");
                         vertexData[2] = currentLine[3].split("/");
 
                         for(int i = 0; i < 3; i++) {
                             int curVert = Integer.parseInt(vertexData[i][0]) - 1;
-                            inds.add(curVert);
-                            Vector2f currentTex = texts.get(Integer.parseInt(vertexData[i][1]) - 1);
+                            inds.add(vertexList.size());
+                            Vector2f curTex = texts.get(Integer.parseInt(vertexData[i][1]) - 1);
                             Vector3f curNorm = norms.get(Integer.parseInt(vertexData[i][2]) - 1);
 
-                            while (curVert > vertexList.size() - 1) {
-                                vertexList.add(null);
-                            }
-
-                            vertexList.set(curVert, new Vertex(verts.get(curVert), new Vector3f(curNorm.x, curNorm.y, curNorm.z), new Vector2f(currentTex.x, currentTex.y), curMtl));
+                            vertexList.add(new Vertex(verts.get(curVert), new Vector3f(curNorm.x, curNorm.y, curNorm.z), new Vector2f(curTex.x, 1 - curTex.y), curMtl));
                         }
                         break;
                 }
@@ -159,18 +146,6 @@ public class ObjectMesh {
         }
         //Obj file loader
 
-        norms = null;
-        texts = null;
-        verts = null;
-        curObj = null;
-        curSmoothing = null;
-        mtlPath = null;
-        materialList = null;
-        textureList = null;
-        line = null;
-        currentLine = null;
-        vertexData = null;
-        tokens = null;
         System.gc();
 
         //Construct mesh

@@ -17,9 +17,9 @@ public class GameObjectRenderer implements IGameObjectRenderer {
     private Shader shader;
     private Window window;
 
-    public GameObjectRenderer(Window window, Shader shader) {
+    public GameObjectRenderer(Shader shader) {
         this.shader = shader;
-        this.window = window;
+        this.window = Window.getInstance();
     }
 
     public void render(Map<Integer, List<GameObject>> objects, Light light) {
@@ -28,7 +28,6 @@ public class GameObjectRenderer implements IGameObjectRenderer {
             List<GameObject> batch = objects.get(meshID);
             for(GameObject object : batch) {
                 prepareInstance(object, light);
-
                 GL11.glDrawElements(GL11.GL_TRIANGLES, main.meshes.get(object.meshID).indices.length, GL11.GL_UNSIGNED_INT, 0);
             }
             unbindMesh();

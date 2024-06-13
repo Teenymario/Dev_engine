@@ -12,6 +12,14 @@ public class Vector2f {
 
 
 
+    //Util
+    public String print() {
+        return "x: " + this.x + " | y: " + this.y;
+    }
+    //Util
+
+
+
     //Modification    
     public static Vector2f add(Vector2f vec1, Vector2f vec2) {
         return new Vector2f(vec1.x + vec2.x, vec1.y + vec2.y);

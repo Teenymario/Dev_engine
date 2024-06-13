@@ -16,9 +16,9 @@ public class TerrainRenderer implements ITerrainRenderer {
     private Shader shader;
     private Window window;
 
-    public TerrainRenderer(Window window, Shader shader) {
+    public TerrainRenderer(Shader shader) {
         this.shader = shader;
-        this.window = window;
+        this.window = Window.getInstance();
     }
 
     public void render(List<Terrain> terrains, Light light) {

@@ -21,11 +21,19 @@ public class Window {
     private int[] posX = new int[1], posY = new int[1];
     private Matrix4f projection;
 
+    //Make singleton
+    private static Window singleton;
+
     public Window(int width, int height, String title) {
         this.width = width;
         this.height = height;
         this.title = title;
         projection = Matrix4f.projection(main.fov, (float) width / (float) height, main.near, main.far);
+        singleton = this;
+    }
+
+    public static Window getInstance() {
+        return singleton;
     }
 
     public void create() {
@@ -35,6 +43,13 @@ public class Window {
         }
 
         input = new Input();
+
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_TRUE);
+        GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_TRUE);
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 4);
+        GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 1);
+
         window = GLFW.glfwCreateWindow(width, height, title, isFullscreen ? GLFW.glfwGetPrimaryMonitor() : 0, 0);
 
         if(window == 0) {

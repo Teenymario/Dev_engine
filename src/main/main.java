@@ -4,10 +4,13 @@ import engine.IO.Input;
 import engine.IO.Window;
 import engine.Terrain.Terrain;
 import engine.graphics.*;
+import engine.graphics.renderers.GUIRenderer;
 import engine.graphics.renderers.GameObjectRenderer;
 import engine.graphics.renderers.TerrainRenderer;
+import engine.maths.Vector2f;
 import engine.maths.Vector3f;
 import engine.objects.Camera;
+import engine.objects.GUITexture;
 import engine.objects.GameObject;
 import engine.objects.Light;
 import org.lwjgl.glfw.GLFW;
@@ -20,12 +23,15 @@ public class main implements Runnable {
     public Window window;
     public Shader objShader;
     public Shader terrainShader;
+    public Shader guiShader;
     public GameObjectRenderer objRenderer;
     public TerrainRenderer terrainRenderer;
-    public MasterRenderer<GameObjectRenderer, TerrainRenderer> masterRenderer;
+    public GUIRenderer guiRenderer;
+    public MasterRenderer<GameObjectRenderer, TerrainRenderer, GUIRenderer> masterRenderer;
     public static List<GameObject> objectMasterList = new ArrayList<>();
     public static List<Terrain> terrains = new ArrayList<>();
-    public static List<Mesh> meshes;
+    public static List<Mesh> meshes = new ArrayList<>();
+    public static List<GUITexture> guis = new ArrayList<>();
 
     //Rendering values
     public final int WIDTH = 1280, HEIGHT = 760;
@@ -60,23 +66,34 @@ public class main implements Runnable {
     public void init() {
         System.out.println("Initializing game");
         window = new Window(WIDTH, HEIGHT, "game");
-        window.setBackgroundColor(0, 0, 0);
+        window.setBackgroundColor(0.2f, 0.2f, 0.2f);
         window.create();
 
         objShader = new Shader("/shaders/objVert.glsl", "/shaders/objFrag.glsl");
         objShader.create();
-        objRenderer = new GameObjectRenderer(window, objShader);
+        objRenderer = new GameObjectRenderer(objShader);
 
         terrainShader = new Shader("/shaders/terrainVert.glsl", "/shaders/terrainFrag.glsl");
         terrainShader.create();
-        terrainRenderer = new TerrainRenderer(window, terrainShader);
+        terrainRenderer = new TerrainRenderer(terrainShader);
 
-        masterRenderer = new MasterRenderer<>(objRenderer, terrainRenderer);
+        /*
+        *   Context:
+        *   Creating a GUI rendering system
+        *   Need to add guiRenderer to the master renderer
+        *   Create shader files for the GUI renderer
+        *   Create/use an existing GUI image
+        *   Debug and fix issues
+        *   Tut vid 24, 7:20
+        *  */
+        guiShader = new Shader("/shaders/guiVert.glsl", "/shaders/guiFrag.glsl");
+        guiShader.create();
+        guiRenderer = new GUIRenderer(guiShader);
 
-        meshes = new ArrayList<>();
+        masterRenderer = new MasterRenderer<>(objRenderer, terrainRenderer, guiRenderer);
 
         //Meshes
-        ObjectMesh.construct("resources/models/TieInterceptor.obj").constructMesh();
+        ObjectMesh.construct("resources/models/Grass_Block.obj").constructMesh();
         ObjectMesh.construct("resources/models/light.obj").constructMesh();
         //Meshes
 
@@ -86,11 +103,13 @@ public class main implements Runnable {
         light = new Light(new Vector3f(0, 1, 1), new Vector3f(1, 1, 1));
         lightCube = new GameObject(1, light.pos, new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 
-
-
         terrains.add(new Terrain(0, 0, "/textures/grass_top.png"));
         //terrains.add(new Terrain(1, 0, "/textures/grass_top.png"));
         //GameObjects
+
+        //Guis
+        guis.add(new GUITexture(0, new Vector2f(0.5f, 0.5f), "/textures/gui/cursor.png"));
+        //Guis
 
         objectMasterList.add(object);
         objectMasterList.add(lightCube);

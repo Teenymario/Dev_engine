@@ -1,5 +1,6 @@
 package engine.graphics;
 
+import engine.graphics.renderers.IGUIRendererBase;
 import engine.graphics.renderers.IGameObjectRenderer;
 import engine.graphics.renderers.ITerrainRenderer;
 import engine.objects.GameObject;
@@ -11,20 +12,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MasterRenderer<obj extends IGameObjectRenderer, terrain extends ITerrainRenderer> {
+public class MasterRenderer<obj extends IGameObjectRenderer, terrain extends ITerrainRenderer, gui extends IGUIRendererBase> {
 
     private obj objRenderer;
     private terrain terrainRenderer;
+    private gui guiRenderer;
     private Map<Integer, List<GameObject>> objects = new HashMap<Integer, List<GameObject>>();
 
-    public MasterRenderer(obj objRenderer, terrain terrainRenderer) {
+    public MasterRenderer(obj objRenderer, terrain terrainRenderer, gui guiRenderer) {
         this.objRenderer = objRenderer;
         this.terrainRenderer = terrainRenderer;
+        this.guiRenderer = guiRenderer;
     }
 
     public void render(Light light) {
         objRenderer.render(objects, light);
         terrainRenderer.render(main.terrains, light);
+        guiRenderer.render(main.guis);
     }
 
     public void processObject(GameObject object) {
@@ -42,6 +46,7 @@ public class MasterRenderer<obj extends IGameObjectRenderer, terrain extends ITe
     public void destroy() {
         objRenderer.getShader().destroy();
         terrainRenderer.getShader().destroy();
+        guiRenderer.getShader().destroy();
     }
 
 }
