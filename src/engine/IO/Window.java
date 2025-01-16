@@ -28,7 +28,7 @@ public class Window {
         this.width = width;
         this.height = height;
         this.title = title;
-        projection = Matrix4f.projection(main.fov, (float) width / (float) height, main.near, main.far);
+        projection = Matrix4f.projection(main.fov, (float) (width * 2) / (float) (height * 2), main.near, main.far);
         singleton = this;
     }
 

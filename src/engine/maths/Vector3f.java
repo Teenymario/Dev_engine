@@ -17,6 +17,12 @@ public class Vector3f {
     public String print() {
         return "x: " + this.x + " | y: " + this.y + " | z: " + this.z;
     }
+
+    public void redefine(float x, float y, float z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
     //Util
 
 

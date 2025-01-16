@@ -21,7 +21,7 @@ public class Camera {
         this.viewMatrix = Matrix4f.view(pos, rot);
     }
 
-    public void update() {
+    public void updateVisual() {
         boolean updateMatrix = false;
         newX = Input.getMouseX();
         newY = Input.getMouseY();
@@ -76,11 +76,10 @@ public class Camera {
         }
     }
 
-    public void update(GameObject target) {
+    public void updateVisual(GameObject target) {
         boolean updateMatrix = false;
         newX = Input.getMouseX();
         newY = Input.getMouseY();
-        System.out.println(newX);
 
         float dx = (float) (newX - oldX);
         float dy = (float) (newY - oldY);

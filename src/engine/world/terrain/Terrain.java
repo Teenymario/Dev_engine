@@ -1,4 +1,4 @@
-package engine.Terrain;
+package engine.world.terrain;
 
 import engine.graphics.Material;
 import engine.graphics.Mesh;

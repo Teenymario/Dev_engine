@@ -1,11 +1,11 @@
 # Development goals
 
 - [ ] Create a simple 16x16x16 chunk of minecraft blocks
-- [ ] Mimic cubic chunks like world
 - [ ] Chunk rendering optimisations (greedy meshing)
 - [ ] Maybe implement full RGB color rendering
 - [ ] Introduce prototype terrain generation
 - [ ] Terrain gen optimisations
+- [ ] Mimic cubic chunks like world
 - [ ] Optimised world save format
 - [ ] Create a basic loading screen
 - [ ] Create a basic ticking system

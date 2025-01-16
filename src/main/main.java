@@ -2,17 +2,25 @@ package main;
 
 import engine.IO.Input;
 import engine.IO.Window;
-import engine.Terrain.Terrain;
-import engine.graphics.*;
+import engine.world.terrain.BlockBase;
+import engine.world.terrain.Terrain;
+import engine.graphics.MasterRenderer;
+import engine.graphics.Mesh;
+import engine.graphics.ObjectMesh;
+import engine.graphics.Shader;
 import engine.graphics.renderers.GUIRenderer;
 import engine.graphics.renderers.GameObjectRenderer;
 import engine.graphics.renderers.TerrainRenderer;
-import engine.maths.Vector2f;
 import engine.maths.Vector3f;
 import engine.objects.Camera;
 import engine.objects.GUITexture;
 import engine.objects.GameObject;
 import engine.objects.Light;
+import engine.world.dimension.Dimension;
+import engine.world.dimension.IDimensionBase;
+import engine.world.terrain.blocks.dirt;
+import engine.world.terrain.blocks.grass;
+import engine.world.terrain.blocks.stone;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -36,8 +44,8 @@ public class main implements Runnable {
     //Rendering values
     public final int WIDTH = 1280, HEIGHT = 760;
     public static float fov = 100.0f;
-    public static float near = 0.005f;
-    public static float far = 100000.0f;
+    public static float near = 0.0025f;
+    public static float far = 50000.0f;
     public static float speed = 0.025f, sensitivity = 0.5f;
 
     //Game values
@@ -46,17 +54,21 @@ public class main implements Runnable {
     public static float speedModifier;
     public static boolean lightLocked;
 
-    //Frame counting
+    //Game ticking
     public static long lastTime;
     public static long counter;
 
-    //GameObject
+    //GameObjects
     public GameObject object;
     public static Camera camera;
     public Light light;
     public GameObject lightCube;
 
-
+    //Game world
+    public static final String ID = "devEngine";
+    public static ArrayList<BlockBase> contentBlocks = new ArrayList<>();
+    //public static ArrayList<ItemBase> contentItems = new ArrayList<>();
+    public static Dimension world;
 
     public void start() {
         game = new Thread(this, "game");
@@ -77,15 +89,6 @@ public class main implements Runnable {
         terrainShader.create();
         terrainRenderer = new TerrainRenderer(terrainShader);
 
-        /*
-        *   Context:
-        *   Creating a GUI rendering system
-        *   Need to add guiRenderer to the master renderer
-        *   Create shader files for the GUI renderer
-        *   Create/use an existing GUI image
-        *   Debug and fix issues
-        *   Tut vid 24, 7:20
-        *  */
         guiShader = new Shader("/shaders/guiVert.glsl", "/shaders/guiFrag.glsl");
         guiShader.create();
         guiRenderer = new GUIRenderer(guiShader);
@@ -94,24 +97,33 @@ public class main implements Runnable {
 
         //Meshes
         ObjectMesh.construct("resources/models/Grass_Block.obj").constructMesh();
+        ObjectMesh.construct("resources/models/Dirt_Block.obj").constructMesh();
+        ObjectMesh.construct("resources/models/Stone_Block.obj").constructMesh();
         ObjectMesh.construct("resources/models/light.obj").constructMesh();
         //Meshes
 
         //GameObjects
-        object = new GameObject(0, new Vector3f(0, 0.5f, -1), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+        object = new GameObject(0, new Vector3f(0, 0.5f, -5), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
         camera = new Camera(new Vector3f(0, 1, 0), new Vector3f(0, 1, 0));
         light = new Light(new Vector3f(0, 1, 1), new Vector3f(1, 1, 1));
-        lightCube = new GameObject(1, light.pos, new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+        lightCube = new GameObject(3, light.pos, new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 
-        terrains.add(new Terrain(0, 0, "/textures/grass_top.png"));
+        //terrains.add(new Terrain(0, 0, "/textures/grass_top.png"));
         //terrains.add(new Terrain(1, 0, "/textures/grass_top.png"));
         //GameObjects
 
+        //Create world
+        world = new Dimension("earth");
+        contentBlocks.add(new grass("grass", 0));
+        contentBlocks.add(new dirt("dirt", 1));
+        contentBlocks.add(new stone("dirt", 2));
+        //Create world
+
         //Guis
-        guis.add(new GUITexture(0, new Vector2f(0.5f, 0.5f), "/textures/gui/cursor.png"));
+        //guis.add(new GUITexture(0, new Vector2f(0f, 0f), new Vector2f(0.02f, 0.02f), "/textures/gui/cursor.png"));
         //Guis
 
-        objectMasterList.add(object);
+        //objectMasterList.add(object);
         objectMasterList.add(lightCube);
 
         for(GameObject object : objectMasterList) {
@@ -129,57 +141,60 @@ public class main implements Runnable {
 
     public void run() {
         init();
+        //Start game tick loop
         while(!window.shouldClose() && !Input.isKeyDown(GLFW.GLFW_KEY_ESCAPE)) {
-            if(Input.isKeyDown(GLFW.GLFW_KEY_F11)) window.setFullscreen(!window.isFullscreen());
-            if(Input.isKeyDown(GLFW.GLFW_KEY_L)) window.mouseState(true);
-            if(Input.isKeyDown(GLFW.GLFW_KEY_U)) window.mouseState(false);
-            if(Input.isKeyDown(GLFW.GLFW_KEY_C)){
+            if (Input.isKeyDown(GLFW.GLFW_KEY_F11)) window.setFullscreen(!window.isFullscreen());
+            if (Input.isKeyDown(GLFW.GLFW_KEY_L)) window.mouseState(true);
+            if (Input.isKeyDown(GLFW.GLFW_KEY_U)) window.mouseState(false);
+            if (Input.isKeyDown(GLFW.GLFW_KEY_C)) {
                 camera.setRot(new Vector3f(0, 0, 0));
                 camera.setPos(new Vector3f(0, 1, 0));
             }
-            if(Input.isKeyDown(GLFW.GLFW_KEY_F5)) thirdPerson = !thirdPerson;
-            if(Input.isKeyDown(GLFW.GLFW_KEY_F6)) {
+            if (Input.isKeyDown(GLFW.GLFW_KEY_F5)) thirdPerson = !thirdPerson;
+            if (Input.isKeyDown(GLFW.GLFW_KEY_F6)) {
                 lightLocked = !lightLocked;
-                if(lightLocked) {
-                    objectMasterList.get(1).setScale(0, 0, 0);
+                if (lightLocked) {
+                    objectMasterList.get(0).setScale(0, 0, 0);
                 } else {
-                    objectMasterList.get(1).setScale(1, 1, 1);
-                    objectMasterList.get(1).setPos(light.pos.x, light.pos.y, light.pos.z);
+                    objectMasterList.get(0).setScale(1, 1, 1);
+                    objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
                 }
             }
-            if(Input.isKeyDown(GLFW.GLFW_KEY_Q)) speedModifier = speedModifier * 1.02f;
-            if(Input.isKeyDown(GLFW.GLFW_KEY_E)) speedModifier =  speedModifier / 1.02f;
+            if (Input.isKeyDown(GLFW.GLFW_KEY_Q)) speedModifier = speedModifier * 1.02f;
+            if (Input.isKeyDown(GLFW.GLFW_KEY_E)) speedModifier = speedModifier / 1.02f;
             sprinting = Input.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL);
 
-            if(Input.isKeyDown(GLFW.GLFW_KEY_UP)) {
+            if (Input.isKeyDown(GLFW.GLFW_KEY_UP)) {
                 light.pos.z -= 0.025f * speedModifier;
-                objectMasterList.get(1).setPos(light.pos.x, light.pos.y, light.pos.z);
+                objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
             }
-            if(Input.isKeyDown(GLFW.GLFW_KEY_DOWN)) {
+            if (Input.isKeyDown(GLFW.GLFW_KEY_DOWN)) {
                 light.pos.z += 0.025f * speedModifier;
-                objectMasterList.get(1).setPos(light.pos.x, light.pos.y, light.pos.z);
+                objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
             }
-            if(Input.isKeyDown(GLFW.GLFW_KEY_LEFT)) {
+            if (Input.isKeyDown(GLFW.GLFW_KEY_LEFT)) {
                 light.pos.x -= 0.025f * speedModifier;
-                objectMasterList.get(1).setPos(light.pos.x, light.pos.y, light.pos.z);
+                objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
             }
-            if(Input.isKeyDown(GLFW.GLFW_KEY_RIGHT)) {
+            if (Input.isKeyDown(GLFW.GLFW_KEY_RIGHT)) {
                 light.pos.x += 0.025f * speedModifier;
-                objectMasterList.get(1).setPos(light.pos.x, light.pos.y, light.pos.z);
+                objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
             }
-            if(Input.isKeyDown(GLFW.GLFW_KEY_RIGHT_SHIFT)) {
+            if (Input.isKeyDown(GLFW.GLFW_KEY_RIGHT_SHIFT)) {
                 light.pos.y += 0.025f * speedModifier;
-                objectMasterList.get(1).setPos(light.pos.x, light.pos.y, light.pos.z);
+                objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
             }
-            if(Input.isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL)) {
+            if (Input.isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL)) {
                 light.pos.y -= 0.025f * speedModifier;
-                objectMasterList.get(1).setPos(light.pos.x, light.pos.y, light.pos.z);
+                objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
             }
-            if(lightLocked) {
+            if (lightLocked) {
                 light.pos.x = camera.pos.x;
                 light.pos.y = camera.pos.y;
                 light.pos.z = camera.pos.z;
             }
+            //Finish tick
+
             update();
             render();
 
@@ -200,9 +215,9 @@ public class main implements Runnable {
     private void update() {
         window.update();
         if(thirdPerson) {
-            camera.update(object);
+            camera.updateVisual(object);
         } else {
-            camera.update();
+            camera.updateVisual();
         }
     }
 
@@ -221,6 +236,8 @@ public class main implements Runnable {
             mesh.destroy();
         }
         objShader.destroy();
+        terrainShader.destroy();
+        guiShader.destroy();
         masterRenderer.destroy();
         System.out.println("Goodbye :)");
     }

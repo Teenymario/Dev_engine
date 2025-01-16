@@ -12,26 +12,26 @@ out vec3 toCamVec;
 out float visibility;
 out float fmaterialID;
 
-uniform mat4 model;
+uniform vec3 blockPos;
+uniform vec3 cameraPos;
 uniform mat4 view;
 uniform mat4 project;
 uniform vec3 lightPos;
 
-const float density = 0.007;
+const float density = 0.07;
 const float gradient = 1.5;
 
 void main() {
-    vec4 worldPos = model * vec4(pos, 1.0);
-    vec4 posRelativeToCam = view * worldPos;
+    vec3 worldPos = blockPos + pos;
+    vec4 posRelativeToCam = view * vec4(worldPos, 1.0);
     gl_Position = project * posRelativeToCam;
     passTextureCoord = textureCoord;
 
-    surfaceNorm = (model * vec4(normal, 0.0)).xyz;
-    toLighVec = lightPos - worldPos.xyz;
-    toCamVec = (inverse(view) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPos.xyz;
+    surfaceNorm = normal;
+    toLighVec = lightPos - worldPos;
+    toCamVec = cameraPos - worldPos;
 
     float distance = length(posRelativeToCam.xyz);
     visibility = exp(-pow((distance * density), gradient));
-    visibility = 1.0;
     fmaterialID = material;
 }

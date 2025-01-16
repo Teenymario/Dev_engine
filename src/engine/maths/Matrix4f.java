@@ -47,7 +47,7 @@ public class Matrix4f {
         float θ = (float) Math.toRadians(angle);
         float sin = (float) Math.sin(θ); //sine(θ)
         float cos = (float) Math.cos(θ); //cosine(θ)
-        float inCos = 1 - cos; //Inverse of cos or (1 - cosine(θ)
+        float inCos = 1 - cos; //Inverse of cos or (1 - cosine(θ))
 
         //Equation from https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
         //First section
@@ -96,14 +96,22 @@ public class Matrix4f {
 
 
 
+    //2D transformation matrix
+    public static Matrix4f transform2D(Vector2f translation, Vector2f scale) {
+        return Matrix4f.multiply(Matrix4f.translate(new Vector3f(translation.x, translation.y, 0)), Matrix4f.scale(new Vector3f(scale.x, scale.y, 1f)));
+    }
+    //2D transformation matrix
+
+
+
     public static Matrix4f projection(float fov, float aspect, float near, float far) {
         Matrix4f result = Matrix4f.identity();
 
         float tanFOV = (float) Math.tan(Math.toRadians(fov / 2));
         float range = far - near;
 
-        result.set(0, 0, 1.0f / (aspect * tanFOV));
-        result.set(1, 1, 1.0f / tanFOV);
+        result.set(0, 0, 0.5f / (aspect * tanFOV));
+        result.set(1, 1, 0.5f / tanFOV);
         result.set(2, 2, -((far + near) / range));
         result.set(2, 3, -1.0f);
         result.set(3, 2, -((2 * far * near) / range));

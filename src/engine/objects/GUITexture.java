@@ -1,5 +1,6 @@
 package engine.objects;
 
+import engine.maths.Matrix4f;
 import engine.maths.Vector2f;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.PNGDecoder;
@@ -10,13 +11,12 @@ import java.nio.ByteBuffer;
 
 public class GUITexture {
     public int id;
-    public Vector2f pos;
-    public Vector2f scale;
+    public Matrix4f transformationMatrix;
     public int textureID;
 
-    public GUITexture(int id, Vector2f pos, String path) {
+    public GUITexture(int id, Vector2f pos, Vector2f scale, String path) {
         this.id = id;
-        this.pos = pos;
+        this.transformationMatrix = Matrix4f.transform2D(pos, scale);
 
         //Attach texture
         try {
@@ -35,5 +35,9 @@ public class GUITexture {
         } catch(IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateMatrix(Vector2f pos, Vector2f scale) {
+        updateMatrix(pos, scale);
     }
 }

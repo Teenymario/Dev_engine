@@ -1,14 +1,13 @@
 package engine.graphics.renderers;
 
-import engine.Terrain.Terrain;
+import engine.world.terrain.BlockBase;
+import engine.world.terrain.Chunk;
 import engine.objects.Light;
-
-import java.util.List;
 
 public interface ITerrainRenderer extends IRendererBase {
 
-    void prepareInstance(Terrain terrain, Light light);
+    void prepareInstance(BlockBase block, Light light);
 
-    void render(List<Terrain> terrains, Light light);
+    void render(Chunk[] chunks, Light light);
 
 }

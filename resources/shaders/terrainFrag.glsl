@@ -27,7 +27,7 @@ Definitions of material in float[] form
 13, 14, 15 = emmisive
 */
 
-vec4 defineColor(vec4 textureColor, int materialID) {
+vec4 defineColor(int materialID) {
     vec3 unitNormal = normalize(surfaceNorm);
     vec3 unitLightVec = normalize(toLighVec);
 
@@ -35,28 +35,25 @@ vec4 defineColor(vec4 textureColor, int materialID) {
     float brightness = max(nDotL, 0.1);
     vec3 diffuse = vec3(materials[materialID * 16 + 7], materials[materialID * 16 + 8], materials[materialID * 16 + 9]) * lightCol * brightness;
 
-    vec3 unitToCamVec = normalize(toCamVec);
-    vec3 reflectLightDir = reflect(-unitLightVec, unitNormal);
-    float specularFactor = dot(unitToCamVec, reflectLightDir);
+    float specularFactor = dot(normalize(toCamVec), reflect(-unitLightVec, unitNormal));
     specularFactor = max(specularFactor, 0.0);
     float dampedFactor = pow(specularFactor, materials[materialID * 16 + 2]);
     vec3 specular = vec3(materials[materialID * 16 + 10], materials[materialID * 16 + 11], materials[materialID * 16 + 12]) * dampedFactor * lightCol;
 
-    return vec4(diffuse, 1.0) * textureColor + vec4(specular, 0.0) * vec4(materials[materialID * 16 + 4], materials[materialID * 16 + 5], materials[materialID * 16 + 6], 1.0);
+    return vec4(diffuse, 1.0) + vec4(specular, 1.0) * vec4(materials[materialID * 16 + 4], materials[materialID * 16 + 5], materials[materialID * 16 + 6], materials[materialID * 16 + 1]);
 }
 
 void main() {
-
     int materialID = int(fmaterialID + 0.5);
 
     if(materials[materialID * 16] != -1) {
-        vec4 textureColor = texture(textureSampler[int(materials[materialID * 16])], passTextureCoord);
-        if(textureColor.a == 0.0 || visibility == 0.0) {
+        vec4 textureColor = texture(textureSampler[int(materials[materialID * 16] + 0.5)], passTextureCoord);
+        if(textureColor.a < 0.0001 || visibility < 0.0001) {
             discard;
         }
 
-        outColor = mix(vec4(skyColor, 1.0), defineColor(textureColor, materialID) * textureColor, visibility);
+        outColor = mix(vec4(skyColor, 1.0), defineColor(materialID) * textureColor, visibility);
     } else {
-        outColor = mix(vec4(skyColor, 1.0), defineColor(vec4(1.0, 1.0, 1.0, 1.0), materialID), visibility);
+        outColor = mix(vec4(skyColor, 1.0), defineColor(materialID), visibility);
     }
 }

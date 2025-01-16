@@ -27,7 +27,7 @@ public class MasterRenderer<obj extends IGameObjectRenderer, terrain extends ITe
 
     public void render(Light light) {
         objRenderer.render(objects, light);
-        terrainRenderer.render(main.terrains, light);
+        terrainRenderer.render(main.world.chunks, light);
         guiRenderer.render(main.guis);
     }
 
