@@ -7,7 +7,11 @@ public class Dimension implements IDimensionBase {
     public final int SIZE = 1;
     public Chunk[] chunks = new Chunk[SIZE * SIZE * SIZE];
 
-    //Construction utils
+    /* Position utils
+    *  x = i & MASK
+    *  y = (i >> bitsPerCoord) & MASK
+    *  z = (i >> (2 * bitsPerCoord)) & MASK
+    * */
     private int bitsPerCoord = (int) (Math.log(SIZE) / Math.log(2));
     private int MASK = (1 << bitsPerCoord) - 1;
 

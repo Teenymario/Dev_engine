@@ -1,4 +1,4 @@
-package engine.world.terrain.blocks;
+package engine.content.blocks;
 
 import engine.world.terrain.BlockBase;
 

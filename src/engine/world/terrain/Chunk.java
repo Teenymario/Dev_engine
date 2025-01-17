@@ -4,11 +4,14 @@ import engine.maths.Vector3i;
 
 public class Chunk {
     public static final int SIZE = 8;
-    public static final int SIZESQUARED = SIZE * SIZE;
     public Short[] blocks = new Short[SIZE * SIZE * SIZE];
     public Vector3i pos;
 
-    //Construction utils
+    /* Position utils
+     *  x = i & MASK
+     *  y = (i >> bitsPerCoord) & MASK
+     *  z = (i >> (2 * bitsPerCoord)) & MASK
+     * */
     private int bitsPerCoord = (int) (Math.log(SIZE) / Math.log(2));
     private int MASK = (1 << bitsPerCoord) - 1;
 
@@ -16,12 +19,15 @@ public class Chunk {
         pos = new Vector3i(x, y, z);
 
         for(int i = 0; i < blocks.length; i++) {
-            if(((i >> bitsPerCoord) & MASK) == SIZE - 1) {
-                blocks[i] = 0;
-            } else if(((i >> bitsPerCoord) & MASK) > (SIZE - 4)) {
+            y = (i >> bitsPerCoord) & MASK;
+            if(y == SIZE - 1) {
                 blocks[i] = 1;
-            } else {
+            } else if(y >= SIZE - 3) {
                 blocks[i] = 2;
+            } else if(y < SIZE - 4) {
+                blocks[i] = 3;
+            } else {
+                blocks[i] = 0;
             }
         }
     }

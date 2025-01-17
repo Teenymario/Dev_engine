@@ -17,10 +17,9 @@ import engine.objects.GUITexture;
 import engine.objects.GameObject;
 import engine.objects.Light;
 import engine.world.dimension.Dimension;
-import engine.world.dimension.IDimensionBase;
-import engine.world.terrain.blocks.dirt;
-import engine.world.terrain.blocks.grass;
-import engine.world.terrain.blocks.stone;
+import engine.content.blocks.dirt;
+import engine.content.blocks.grass;
+import engine.content.blocks.stone;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
@@ -46,7 +45,7 @@ public class main implements Runnable {
     public static float fov = 100.0f;
     public static float near = 0.0025f;
     public static float far = 50000.0f;
-    public static float speed = 0.025f, sensitivity = 0.5f;
+    public static float speed = 5.0f, sensitivity = 10.0f;
 
     //Game values
     public boolean thirdPerson;
@@ -69,6 +68,11 @@ public class main implements Runnable {
     public static ArrayList<BlockBase> contentBlocks = new ArrayList<>();
     //public static ArrayList<ItemBase> contentItems = new ArrayList<>();
     public static Dimension world;
+
+    //Simulation
+    public static int tickRate = 20;     //Per second
+    public static int frameRate = 60;    //Per second
+    public static double deltaTime = 0;
 
     public void start() {
         game = new Thread(this, "game");
@@ -114,9 +118,10 @@ public class main implements Runnable {
 
         //Create world
         world = new Dimension("earth");
+        contentBlocks.add(new grass("air", -1));
         contentBlocks.add(new grass("grass", 0));
         contentBlocks.add(new dirt("dirt", 1));
-        contentBlocks.add(new stone("dirt", 2));
+        contentBlocks.add(new stone("stone", 2));
         //Create world
 
         //Guis
@@ -141,75 +146,99 @@ public class main implements Runnable {
 
     public void run() {
         init();
-        //Start game tick loop
-        while(!window.shouldClose() && !Input.isKeyDown(GLFW.GLFW_KEY_ESCAPE)) {
-            if (Input.isKeyDown(GLFW.GLFW_KEY_F11)) window.setFullscreen(!window.isFullscreen());
-            if (Input.isKeyDown(GLFW.GLFW_KEY_L)) window.mouseState(true);
-            if (Input.isKeyDown(GLFW.GLFW_KEY_U)) window.mouseState(false);
-            if (Input.isKeyDown(GLFW.GLFW_KEY_C)) {
-                camera.setRot(new Vector3f(0, 0, 0));
-                camera.setPos(new Vector3f(0, 1, 0));
-            }
-            if (Input.isKeyDown(GLFW.GLFW_KEY_F5)) thirdPerson = !thirdPerson;
-            if (Input.isKeyDown(GLFW.GLFW_KEY_F6)) {
-                lightLocked = !lightLocked;
-                if (lightLocked) {
-                    objectMasterList.get(0).setScale(0, 0, 0);
-                } else {
-                    objectMasterList.get(0).setScale(1, 1, 1);
-                    objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
-                }
-            }
-            if (Input.isKeyDown(GLFW.GLFW_KEY_Q)) speedModifier = speedModifier * 1.02f;
-            if (Input.isKeyDown(GLFW.GLFW_KEY_E)) speedModifier = speedModifier / 1.02f;
-            sprinting = Input.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL);
 
-            if (Input.isKeyDown(GLFW.GLFW_KEY_UP)) {
-                light.pos.z -= 0.025f * speedModifier;
-                objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
-            }
-            if (Input.isKeyDown(GLFW.GLFW_KEY_DOWN)) {
-                light.pos.z += 0.025f * speedModifier;
-                objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
-            }
-            if (Input.isKeyDown(GLFW.GLFW_KEY_LEFT)) {
-                light.pos.x -= 0.025f * speedModifier;
-                objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
-            }
-            if (Input.isKeyDown(GLFW.GLFW_KEY_RIGHT)) {
-                light.pos.x += 0.025f * speedModifier;
-                objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
-            }
-            if (Input.isKeyDown(GLFW.GLFW_KEY_RIGHT_SHIFT)) {
-                light.pos.y += 0.025f * speedModifier;
-                objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
-            }
-            if (Input.isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL)) {
-                light.pos.y -= 0.025f * speedModifier;
-                objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
-            }
-            if (lightLocked) {
-                light.pos.x = camera.pos.x;
-                light.pos.y = camera.pos.y;
-                light.pos.z = camera.pos.z;
-            }
-            //Finish tick
+        long lastTime = System.nanoTime();
+        double delta = 0;
+        long timer = System.currentTimeMillis();
+        int frames = 0;
+        int ticks = 0;
 
+        while (!window.shouldClose() && !Input.isKeyDown(GLFW.GLFW_KEY_ESCAPE)) {
+            long now = System.nanoTime();
+            deltaTime = (now - lastTime) / 1000000000.0;
+            lastTime = now;
+            delta += deltaTime * tickRate;
             update();
-            render();
+            handleInput();
 
-            counter++;
-            if (System.currentTimeMillis() - lastTime > 1000) {
-                GLFW.glfwSetWindowTitle(window.getWindow(), window.getTitle() + " | fps: " + counter);
-                lastTime = System.currentTimeMillis();
-                counter = 0;
-                System.gc();
+            while (delta >= 1) {
+                tick();
+                ticks++;
+                delta--;
+            }
+
+            render();
+            frames++;
+
+            if (System.currentTimeMillis() - timer > 1000) {
+                GLFW.glfwSetWindowTitle(window.getWindow(), window.getTitle() + " | fps: " + frames + " | tps: " + ticks);
+                timer += 1000;
+                frames = 0;
+                ticks = 0;
             }
 
             GLFW.glfwPollEvents();
             window.swapBuffers();
         }
         close();
+    }
+
+
+    private void handleInput() {
+        if (Input.isKeyDown(GLFW.GLFW_KEY_F11)) window.setFullscreen(!window.isFullscreen());
+        if (Input.isKeyDown(GLFW.GLFW_KEY_L)) window.mouseState(true);
+        if (Input.isKeyDown(GLFW.GLFW_KEY_U)) window.mouseState(false);
+        if (Input.isKeyDown(GLFW.GLFW_KEY_C)) {
+            camera.setRot(new Vector3f(0, 0, 0));
+            camera.setPos(new Vector3f(0, 1, 0));
+        }
+        if (Input.isKeyDown(GLFW.GLFW_KEY_F5)) thirdPerson = !thirdPerson;
+        if (Input.isKeyDown(GLFW.GLFW_KEY_F6)) {
+            lightLocked = !lightLocked;
+            if (lightLocked) {
+                objectMasterList.get(0).setScale(0, 0, 0);
+            } else {
+                objectMasterList.get(0).setScale(1, 1, 1);
+                objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
+            }
+        }
+        if (Input.isKeyDown(GLFW.GLFW_KEY_Q)) speedModifier = speedModifier * 1.02f;
+        if (Input.isKeyDown(GLFW.GLFW_KEY_E)) speedModifier = speedModifier / 1.02f;
+        sprinting = Input.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL);
+
+        if (Input.isKeyDown(GLFW.GLFW_KEY_UP)) {
+            light.pos.z -= 0.025f * speedModifier;
+            objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
+        }
+        if (Input.isKeyDown(GLFW.GLFW_KEY_DOWN)) {
+            light.pos.z += 0.025f * speedModifier;
+            objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
+        }
+        if (Input.isKeyDown(GLFW.GLFW_KEY_LEFT)) {
+            light.pos.x -= 0.025f * speedModifier;
+            objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
+        }
+        if (Input.isKeyDown(GLFW.GLFW_KEY_RIGHT)) {
+            light.pos.x += 0.025f * speedModifier;
+            objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
+        }
+        if (Input.isKeyDown(GLFW.GLFW_KEY_RIGHT_SHIFT)) {
+            light.pos.y += 0.025f * speedModifier;
+            objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
+        }
+        if (Input.isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL)) {
+            light.pos.y -= 0.025f * speedModifier;
+            objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
+        }
+        if (lightLocked) {
+            light.pos.x = camera.pos.x;
+            light.pos.y = camera.pos.y;
+            light.pos.z = camera.pos.z;
+        }
+    }
+
+    private void tick() {
+
     }
 
     private void update() {

@@ -1,6 +1,7 @@
 package engine.graphics.renderers;
 
 import engine.IO.Window;
+import engine.graphics.ChunkMesher;
 import engine.maths.Vector3f;
 import engine.maths.Vector3i;
 import engine.world.terrain.BlockBase;
@@ -17,7 +18,11 @@ public class TerrainRenderer implements ITerrainRenderer {
     private Shader shader;
     private Window window;
 
-    //Rendering utils
+    /* Position utils
+     *  x = i & MASK
+     *  y = (i >> bitsPerCoord) & MASK
+     *  z = (i >> (2 * bitsPerCoord)) & MASK
+     * */
     private Vector3i chunkOffset = new Vector3i(0, 0, 0);
     private Vector3f blockPos = new Vector3f(0, 0, 0);
     private static int bitsPerCoord = (int) (Math.log(Chunk.SIZE) / Math.log(2));
@@ -32,6 +37,8 @@ public class TerrainRenderer implements ITerrainRenderer {
         for(Chunk chunk : chunks) {
             chunkOffset.redefine(chunk.pos.x * Chunk.SIZE, chunk.pos.y * Chunk.SIZE, chunk.pos.z * Chunk.SIZE);
             for(int i = 0; i < chunk.blocks.length; i++) {
+                if(chunk.blocks[i] == 0) continue;
+                ChunkMesher.meshSingleChunk(chunk);
                 blockPos.redefine(chunkOffset.x + (i & MASK), chunkOffset.y + ((i >> bitsPerCoord) & MASK), chunkOffset.z + ((i >> (2 * bitsPerCoord)) & MASK));
                 bindMesh(main.meshes.get(main.contentBlocks.get(chunk.blocks[i]).getMeshID()));
                 prepareInstance(main.contentBlocks.get(chunk.blocks[i]), light);
@@ -62,10 +69,12 @@ public class TerrainRenderer implements ITerrainRenderer {
         GL30.glDisableVertexAttribArray(1);
         GL30.glDisableVertexAttribArray(0);
         GL30.glBindVertexArray(0);
+        GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
         enableCulling();
     }
 
     public void prepareInstance(BlockBase block, Light light) {
+        GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
         shader.setUniform("blockPos", blockPos);
         shader.setUniform("cameraPos", main.camera.pos);
         shader.setUniform("view", main.camera.viewMatrix);

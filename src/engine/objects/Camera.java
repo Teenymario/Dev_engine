@@ -26,8 +26,9 @@ public class Camera {
         newX = Input.getMouseX();
         newY = Input.getMouseY();
 
-        float x = (float) Math.sin(Math.toRadians(rot.y)) * speed * (main.sprinting ? 2 : 1) * main.speedModifier;
-        float z = (float) Math.cos(Math.toRadians(rot.y)) * speed * (main.sprinting ? 2 : 1) * main.speedModifier;
+        float adjustedSpeed = (float) (speed * main.deltaTime * (main.sprinting ? 2 : 1) * main.speedModifier);
+        float x = (float) Math.sin(Math.toRadians(rot.y)) * adjustedSpeed;
+        float z = (float) Math.cos(Math.toRadians(rot.y)) * adjustedSpeed;
 
         if(Input.isKeyDown(GLFW.GLFW_KEY_A)) {
             pos.x -= z;
@@ -50,11 +51,11 @@ public class Camera {
             updateMatrix = true;
         }
         if(Input.isKeyDown(GLFW.GLFW_KEY_SPACE)) {
-            pos.y += speed * main.speedModifier;
+            pos.y += adjustedSpeed;
             updateMatrix = true;
         }
         if(Input.isKeyDown(GLFW.GLFW_KEY_LEFT_SHIFT)) {
-            pos.y -= speed * main.speedModifier;
+            pos.y -= adjustedSpeed;
             updateMatrix = true;
         }
 
@@ -62,8 +63,9 @@ public class Camera {
         float dy = (float) (newY - oldY);
 
         if(oldX != newX || oldY != newY) {
-            rot.x -= dy * sensitivity;
-            rot.y -= dx * sensitivity;
+            //Update mouse at 144 fps
+            rot.x -= dy * sensitivity * 0.007f;
+            rot.y -= dx * sensitivity * 0.007f;
             rot.x = Math.max(-90, Math.min(90, rot.x));
 
             oldX = newX;

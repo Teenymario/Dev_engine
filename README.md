@@ -6,7 +6,13 @@ This application will also serve as testing grounds for the extended universe mo
 This game engine will also be used for performance learning practices. Because I will need to know all about optimizing java code for when I make the ####### 1.12.2 optimized mod loader I can identify issues in the game and fix them efficiently
 
 # Development goals
-
+- [x] Create a tick system, allow for no framerate cap
+- [ ] Create instantiate, pre init, init and post init loading phases
+- [ ] Create a class to manage the registering, storing and usage of blocks. Create registry names for blocks.
+- [ ] Hardcode predefined block models
+- [ ] Create basic resource system (similar to that of minecraft)
+- [ ] Create texture atlas
+- [ ] Create new rendering pipeline
 - [x] Create a simple 16x16x16 chunk of minecraft blocks
 - [ ] Chunk rendering optimisations (greedy meshing)
 - [ ] Maybe implement full RGB color rendering

@@ -32,7 +32,7 @@ vec4 defineColor(int materialID) {
     vec3 unitLightVec = normalize(toLighVec);
 
     float nDotL = dot(unitNormal, unitLightVec);
-    float brightness = max(nDotL, 0.1);
+    float brightness = max(nDotL, 0.2);
     vec3 diffuse = vec3(materials[materialID * 16 + 7], materials[materialID * 16 + 8], materials[materialID * 16 + 9]) * lightCol * brightness;
 
     float specularFactor = dot(normalize(toCamVec), reflect(-unitLightVec, unitNormal));
