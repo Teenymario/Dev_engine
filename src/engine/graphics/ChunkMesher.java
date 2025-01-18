@@ -11,7 +11,7 @@ public class ChunkMesher {
     private int bitsPerCoord = (int) (Math.log(Chunk.SIZE) / Math.log(2));
     private int MASK = (1 << bitsPerCoord) - 1;
 
-    public static int meshSingleChunk(Chunk chunk) {
+    /*public static int meshSingleChunk(Chunk chunk) {
         for(int y = 0; y < Chunk.SIZE; y++) {
             for(int z = 0; z < Chunk.SIZE; z++) {
                 for(int x = 0; x < Chunk.SIZE; x++) {
@@ -53,8 +53,8 @@ public class ChunkMesher {
             }
         }
 
-        return new ChunkMesh(vertices, indices, textCoords, ).constructMesh();
-    }
+        return new ChunkMesh(vertices, indices, textCoords).constructMesh();
+    }*/
 
     private static boolean isSolid(Chunk chunk, int x, int y, int z) {
         // Check if coordinates are within bounds

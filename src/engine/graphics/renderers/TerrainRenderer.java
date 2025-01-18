@@ -4,7 +4,7 @@ import engine.IO.Window;
 import engine.graphics.ChunkMesher;
 import engine.maths.Vector3f;
 import engine.maths.Vector3i;
-import engine.world.terrain.BlockBase;
+import engine.content.BlockBase;
 import engine.world.terrain.Chunk;
 import engine.graphics.Mesh;
 import engine.graphics.Shader;
@@ -13,6 +13,8 @@ import main.main;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
+
+import java.util.Arrays;
 
 public class TerrainRenderer implements ITerrainRenderer {
     private Shader shader;
@@ -38,11 +40,11 @@ public class TerrainRenderer implements ITerrainRenderer {
             chunkOffset.redefine(chunk.pos.x * Chunk.SIZE, chunk.pos.y * Chunk.SIZE, chunk.pos.z * Chunk.SIZE);
             for(int i = 0; i < chunk.blocks.length; i++) {
                 if(chunk.blocks[i] == 0) continue;
-                ChunkMesher.meshSingleChunk(chunk);
+                //ChunkMesher.meshSingleChunk(chunk);
                 blockPos.redefine(chunkOffset.x + (i & MASK), chunkOffset.y + ((i >> bitsPerCoord) & MASK), chunkOffset.z + ((i >> (2 * bitsPerCoord)) & MASK));
-                bindMesh(main.meshes.get(main.contentBlocks.get(chunk.blocks[i]).getMeshID()));
+                //bindMesh(main.meshes.get(main.contentBlocks.get(chunk.blocks[i]).getMeshID()));
                 prepareInstance(main.contentBlocks.get(chunk.blocks[i]), light);
-                GL11.glDrawElements(GL11.GL_TRIANGLES, main.meshes.get(main.contentBlocks.get(chunk.blocks[i]).getMeshID()).indices.length, GL11.GL_UNSIGNED_INT, 0);
+                //GL11.glDrawElements(GL11.GL_TRIANGLES, main.meshes.get(main.contentBlocks.get(chunk.blocks[i]).getMeshID()).indices.length, GL11.GL_UNSIGNED_INT, 0);
                 unbindMesh();
             }
         }
@@ -82,13 +84,13 @@ public class TerrainRenderer implements ITerrainRenderer {
         shader.setUniform("lightPos", light.pos);
         shader.setUniform("lightCol", light.color);
         shader.setUniform("skyColor", window.background);
-        shader.setUniform("materials", main.meshes.get(block.getMeshID()).materials);
-        for (int i = 0; i < main.meshes.get(block.getMeshID()).textures(); i++) {
+        //shader.setUniform("materials", main.meshes.get(block.getMeshID()).materials);
+        /*for (int i = 0; i < main.meshes.get(block.getMeshID()).textures(); i++) {
             GL30.glActiveTexture(GL30.GL_TEXTURE0 + i);
             GL30.glBindTexture(GL30.GL_TEXTURE_2D, main.meshes.get(block.getMeshID()).textureIDs()[i]);
             GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
             shader.setUniform("textureSampler[" + i + "]", i);
-        }
+        }*/
     }
 
     public Shader getShader() {

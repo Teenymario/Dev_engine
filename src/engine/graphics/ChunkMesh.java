@@ -89,7 +89,7 @@ public class ChunkMesh {
         GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indBuffer, GL15.GL_STATIC_DRAW);
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
 
-        main.meshes.add(this);
+        //main.meshes.add(this);
         return main.meshes.size() - 1;
     }
 

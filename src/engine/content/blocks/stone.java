@@ -1,23 +1,33 @@
 package engine.content.blocks;
 
-import engine.world.terrain.BlockBase;
+import engine.content.BlockBase;
+import engine.graphics.models.blocks.BlockModel;
 
 public class stone extends BlockBase {
-    public static int meshID;
-    public static String registryName;
+    public static Short ID;
+    public static BlockModel model;
 
-    public stone(String registryName, int meshID) {
-        this.meshID = meshID;
-        this.registryName = registryName;
+    public stone() {
+
     }
 
     @Override
-    public void setMeshID(int meshID) {
-        stone.meshID = meshID;
+    public BlockModel getModel() {
+        return model;
     }
 
     @Override
-    public int getMeshID() {
-        return meshID;
+    public void setModel(BlockModel model) {
+        this.model = model;
+    }
+
+    @Override
+    public short getID() {
+        return ID;
+    }
+
+    @Override
+    public void setID(short ID) {
+        this.ID = ID;
     }
 }

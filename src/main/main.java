@@ -2,8 +2,9 @@ package main;
 
 import engine.IO.Input;
 import engine.IO.Window;
-import engine.world.terrain.BlockBase;
-import engine.world.terrain.Terrain;
+import engine.content.BlockManager;
+import engine.content.BlockBase;
+import engine.content.blocks.*;
 import engine.graphics.MasterRenderer;
 import engine.graphics.Mesh;
 import engine.graphics.ObjectMesh;
@@ -17,15 +18,13 @@ import engine.objects.GUITexture;
 import engine.objects.GameObject;
 import engine.objects.Light;
 import engine.world.dimension.Dimension;
-import engine.content.blocks.dirt;
-import engine.content.blocks.grass;
-import engine.content.blocks.stone;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class main implements Runnable {
+    //Core values
     public Thread game;
     public Window window;
     public Shader objShader;
@@ -36,7 +35,6 @@ public class main implements Runnable {
     public GUIRenderer guiRenderer;
     public MasterRenderer<GameObjectRenderer, TerrainRenderer, GUIRenderer> masterRenderer;
     public static List<GameObject> objectMasterList = new ArrayList<>();
-    public static List<Terrain> terrains = new ArrayList<>();
     public static List<Mesh> meshes = new ArrayList<>();
     public static List<GUITexture> guis = new ArrayList<>();
 
@@ -55,7 +53,6 @@ public class main implements Runnable {
 
     //Game ticking
     public static long lastTime;
-    public static long counter;
 
     //GameObjects
     public GameObject object;
@@ -64,7 +61,8 @@ public class main implements Runnable {
     public GameObject lightCube;
 
     //Game world
-    public static final String ID = "devEngine";
+    public static final String registryID = "devEngine";  //Allow for easier modding
+    public static BlockManager blockManager;
     public static ArrayList<BlockBase> contentBlocks = new ArrayList<>();
     //public static ArrayList<ItemBase> contentItems = new ArrayList<>();
     public static Dimension world;
@@ -74,79 +72,42 @@ public class main implements Runnable {
     public static int frameRate = 60;    //Per second
     public static double deltaTime = 0;
 
+    //Util
+    public static final StringBuilder stringer = new StringBuilder();    //Please use the concat function. If you use this directly make sure to run .setLength(0); on the thing after you finish
+
+    public static String concat(Object... args) {
+        for (Object arg : args) {
+            stringer.append(arg);
+        }
+
+        String val = stringer.toString();
+        stringer.setLength(0);
+        return val;
+    }
+    //Util
+
     public void start() {
         game = new Thread(this, "game");
         game.start();
     }
 
-    public void init() {
-        System.out.println("Initializing game");
-        window = new Window(WIDTH, HEIGHT, "game");
-        window.setBackgroundColor(0.2f, 0.2f, 0.2f);
-        window.create();
-
-        objShader = new Shader("/shaders/objVert.glsl", "/shaders/objFrag.glsl");
-        objShader.create();
-        objRenderer = new GameObjectRenderer(objShader);
-
-        terrainShader = new Shader("/shaders/terrainVert.glsl", "/shaders/terrainFrag.glsl");
-        terrainShader.create();
-        terrainRenderer = new TerrainRenderer(terrainShader);
-
-        guiShader = new Shader("/shaders/guiVert.glsl", "/shaders/guiFrag.glsl");
-        guiShader.create();
-        guiRenderer = new GUIRenderer(guiShader);
-
-        masterRenderer = new MasterRenderer<>(objRenderer, terrainRenderer, guiRenderer);
-
-        //Meshes
-        ObjectMesh.construct("resources/models/Grass_Block.obj").constructMesh();
-        ObjectMesh.construct("resources/models/Dirt_Block.obj").constructMesh();
-        ObjectMesh.construct("resources/models/Stone_Block.obj").constructMesh();
-        ObjectMesh.construct("resources/models/light.obj").constructMesh();
-        //Meshes
-
-        //GameObjects
-        object = new GameObject(0, new Vector3f(0, 0.5f, -5), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-        camera = new Camera(new Vector3f(0, 1, 0), new Vector3f(0, 1, 0));
-        light = new Light(new Vector3f(0, 1, 1), new Vector3f(1, 1, 1));
-        lightCube = new GameObject(3, light.pos, new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-
-        //terrains.add(new Terrain(0, 0, "/textures/grass_top.png"));
-        //terrains.add(new Terrain(1, 0, "/textures/grass_top.png"));
-        //GameObjects
-
-        //Create world
-        world = new Dimension("earth");
-        contentBlocks.add(new grass("air", -1));
-        contentBlocks.add(new grass("grass", 0));
-        contentBlocks.add(new dirt("dirt", 1));
-        contentBlocks.add(new stone("stone", 2));
-        //Create world
-
-        //Guis
-        //guis.add(new GUITexture(0, new Vector2f(0f, 0f), new Vector2f(0.02f, 0.02f), "/textures/gui/cursor.png"));
-        //Guis
-
-        //objectMasterList.add(object);
-        objectMasterList.add(lightCube);
-
-        for(GameObject object : objectMasterList) {
-            masterRenderer.processObject(object);
-        }
-
-        thirdPerson = false;
-        speedModifier = 1;
-        sprinting = false;
-        lightLocked = false;
-        lastTime = System.currentTimeMillis();
-
-        System.gc();
-    }
-
     public void run() {
+        System.out.println("Started loading sequence");
+
+        //Instantiate core functionality
+        instantiate();
+
+        //Load and setup content
+        preInit();
+
+        //Process graphics
         init();
 
+        //Finalise
+        postInit();
+        System.gc();
+
+        //Start the game
         long lastTime = System.nanoTime();
         double delta = 0;
         long timer = System.currentTimeMillis();
@@ -183,6 +144,90 @@ public class main implements Runnable {
         close();
     }
 
+    //Setup core game engine content
+    private void instantiate() {
+        System.out.println("- Instantiate");
+        window = new Window(WIDTH, HEIGHT, "game");
+        window.setBackgroundColor(0.2f, 0.2f, 0.2f);
+        window.create();
+
+        objShader = new Shader("/shaders/objVert.glsl", "/shaders/objFrag.glsl");
+        objShader.create();
+        objRenderer = new GameObjectRenderer(objShader);
+
+        terrainShader = new Shader("/shaders/terrainVert.glsl", "/shaders/terrainFrag.glsl");
+        terrainShader.create();
+        terrainRenderer = new TerrainRenderer(terrainShader);
+
+        guiShader = new Shader("/shaders/guiVert.glsl", "/shaders/guiFrag.glsl");
+        guiShader.create();
+        guiRenderer = new GUIRenderer(guiShader);
+
+        masterRenderer = new MasterRenderer<>(objRenderer, terrainRenderer, guiRenderer);
+
+        //Meshes
+        ObjectMesh.construct("resources/models/Grass_Block.obj").constructMesh();
+        ObjectMesh.construct("resources/models/Dirt_Block.obj").constructMesh();
+        ObjectMesh.construct("resources/models/Stone_Block.obj").constructMesh();
+        ObjectMesh.construct("resources/models/light.obj").constructMesh();
+        //Meshes
+
+        //GameObjects
+        object = new GameObject(0, new Vector3f(0, 0.5f, -5), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+        light = new Light(new Vector3f(0, 1, 1), new Vector3f(1, 1, 1));
+        lightCube = new GameObject(3, light.pos, new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+
+        //terrains.add(new Terrain(0, 0, "/textures/grass_top.png"));
+        //terrains.add(new Terrain(1, 0, "/textures/grass_top.png"));
+        //GameObjects
+    }
+
+    //Loading game content
+    private void preInit() {
+        System.out.println("- Pre Init");
+        blockManager = BlockManager.getInstance();
+
+        blockManager.register(new dirt(), registryID, "dirt");
+        blockManager.register(new stone(), registryID, "stone");
+        blockManager.register(new grass(), registryID, "grass");
+        blockManager.register(new sand(), registryID, "sand");
+        blockManager.register(new glass(), registryID, "glass");
+        blockManager.register(new stairs(), registryID, "stairs");
+
+
+
+        //Create world
+        world = new Dimension("earth");
+        //Create world
+
+        //Guis
+        //guis.add(new GUITexture(0, new Vector2f(0f, 0f), new Vector2f(0.02f, 0.02f), "/textures/gui/cursor.png"));
+        //Guis
+
+        //objectMasterList.add(object);
+        objectMasterList.add(lightCube);
+
+        for(GameObject object : objectMasterList) {
+            masterRenderer.processObject(object);
+        }
+    }
+
+    //Loading graphics related content
+    private void init() {
+        System.out.println("- Init");
+    }
+
+    //Finalise
+    private void postInit() {
+        System.out.println("- Post Init");
+
+        camera = new Camera(new Vector3f(0, 1, 0), new Vector3f(0, 1, 0));
+        thirdPerson = false;
+        speedModifier = 1;
+        sprinting = false;
+        lightLocked = false;
+        lastTime = System.currentTimeMillis();
+    }
 
     private void handleInput() {
         if (Input.isKeyDown(GLFW.GLFW_KEY_F11)) window.setFullscreen(!window.isFullscreen());

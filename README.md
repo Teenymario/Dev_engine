@@ -7,9 +7,8 @@ This game engine will also be used for performance learning practices. Because I
 
 # Development goals
 - [x] Create a tick system, allow for no framerate cap
-- [ ] Create instantiate, pre init, init and post init loading phases
-- [ ] Create a class to manage the registering, storing and usage of blocks. Create registry names for blocks.
-- [ ] Hardcode predefined block models
+- [x] Create instantiate, pre init, init and post init loading phases
+- [x] Create a class to manage the registering, storing and usage of blocks. Create registry names for blocks.
 - [ ] Create basic resource system (similar to that of minecraft)
 - [ ] Create texture atlas
 - [ ] Create new rendering pipeline

@@ -1,6 +1,6 @@
 package engine.graphics.renderers;
 
-import engine.world.terrain.BlockBase;
+import engine.content.BlockBase;
 import engine.world.terrain.Chunk;
 import engine.objects.Light;
 
