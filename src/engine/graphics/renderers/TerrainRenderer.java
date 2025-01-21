@@ -43,7 +43,7 @@ public class TerrainRenderer implements ITerrainRenderer {
                 //ChunkMesher.meshSingleChunk(chunk);
                 blockPos.redefine(chunkOffset.x + (i & MASK), chunkOffset.y + ((i >> bitsPerCoord) & MASK), chunkOffset.z + ((i >> (2 * bitsPerCoord)) & MASK));
                 //bindMesh(main.meshes.get(main.contentBlocks.get(chunk.blocks[i]).getMeshID()));
-                prepareInstance(main.contentBlocks.get(chunk.blocks[i]), light);
+                //prepareInstance(main.contentBlocks.get(chunk.blocks[i]), light);
                 //GL11.glDrawElements(GL11.GL_TRIANGLES, main.meshes.get(main.contentBlocks.get(chunk.blocks[i]).getMeshID()).indices.length, GL11.GL_UNSIGNED_INT, 0);
                 unbindMesh();
             }

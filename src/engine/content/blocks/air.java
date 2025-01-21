@@ -3,7 +3,7 @@ package engine.content.blocks;
 import engine.content.BlockBase;
 import engine.graphics.models.BlockModel;
 
-public class glass extends BlockBase {
+public class air extends BlockBase {
     public static Short ID;
     public static BlockModel model;
 

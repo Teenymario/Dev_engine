@@ -1,15 +1,11 @@
 package engine.content.blocks;
 
 import engine.content.BlockBase;
-import engine.graphics.models.blocks.BlockModel;
+import engine.graphics.models.BlockModel;
 
 public class stone extends BlockBase {
     public static Short ID;
     public static BlockModel model;
-
-    public stone() {
-
-    }
 
     @Override
     public BlockModel getModel() {

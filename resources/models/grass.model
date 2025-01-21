@@ -1,0 +1,7 @@
+type full
+top devEngine:grass_top
+bottom devEngine:dirt
+north devEngine:grass_side
+south devEngine:grass_side
+west devEngine:grass_side
+east devEngine:grass_side

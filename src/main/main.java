@@ -3,12 +3,8 @@ package main;
 import engine.IO.Input;
 import engine.IO.Window;
 import engine.content.BlockManager;
-import engine.content.BlockBase;
 import engine.content.blocks.*;
-import engine.graphics.MasterRenderer;
-import engine.graphics.Mesh;
-import engine.graphics.ObjectMesh;
-import engine.graphics.Shader;
+import engine.graphics.*;
 import engine.graphics.renderers.GUIRenderer;
 import engine.graphics.renderers.GameObjectRenderer;
 import engine.graphics.renderers.TerrainRenderer;
@@ -17,9 +13,12 @@ import engine.objects.Camera;
 import engine.objects.GUITexture;
 import engine.objects.GameObject;
 import engine.objects.Light;
+import engine.utils.FileCallback;
+import engine.utils.FileUtils;
 import engine.world.dimension.Dimension;
 import org.lwjgl.glfw.GLFW;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,9 +60,9 @@ public class main implements Runnable {
     public GameObject lightCube;
 
     //Game world
-    public static final String registryID = "devEngine";  //Allow for easier modding
+    public static final String registryID = "devEngine";        //Allow for easier modding
+    public static ResourceManager resourceManager;
     public static BlockManager blockManager;
-    public static ArrayList<BlockBase> contentBlocks = new ArrayList<>();
     //public static ArrayList<ItemBase> contentItems = new ArrayList<>();
     public static Dimension world;
 
@@ -76,7 +75,7 @@ public class main implements Runnable {
     public static final StringBuilder stringer = new StringBuilder();    //Please use the concat function. If you use this directly make sure to run .setLength(0); on the thing after you finish
 
     public static String concat(Object... args) {
-        for (Object arg : args) {
+        for(Object arg : args) {
             stringer.append(arg);
         }
 
@@ -94,13 +93,13 @@ public class main implements Runnable {
     public void run() {
         System.out.println("Started loading sequence");
 
-        //Instantiate core functionality
+        //Setup engine
         instantiate();
 
-        //Load and setup content
+        //Load resources
         preInit();
 
-        //Process graphics
+        //Load content
         init();
 
         //Finalise
@@ -128,7 +127,7 @@ public class main implements Runnable {
                 delta--;
             }
 
-            render();
+            //render();
             frames++;
 
             if (System.currentTimeMillis() - timer > 1000) {
@@ -141,10 +140,10 @@ public class main implements Runnable {
             GLFW.glfwPollEvents();
             window.swapBuffers();
         }
-        close();
+        close(false);
     }
 
-    //Setup core game engine content
+    //Setup core game engine
     private void instantiate() {
         System.out.println("- Instantiate");
         window = new Window(WIDTH, HEIGHT, "game");
@@ -166,25 +165,41 @@ public class main implements Runnable {
         masterRenderer = new MasterRenderer<>(objRenderer, terrainRenderer, guiRenderer);
 
         //Meshes
-        ObjectMesh.construct("resources/models/Grass_Block.obj").constructMesh();
-        ObjectMesh.construct("resources/models/Dirt_Block.obj").constructMesh();
-        ObjectMesh.construct("resources/models/Stone_Block.obj").constructMesh();
-        ObjectMesh.construct("resources/models/light.obj").constructMesh();
+        //ObjectMesh.construct("resources/models/Grass_Block.obj").constructMesh();
+        //ObjectMesh.construct("resources/models/Dirt_Block.obj").constructMesh();
+        //ObjectMesh.construct("resources/models/Stone_Block.obj").constructMesh();
+        //ObjectMesh.construct("resources/models/light.obj").constructMesh();
         //Meshes
 
         //GameObjects
-        object = new GameObject(0, new Vector3f(0, 0.5f, -5), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-        light = new Light(new Vector3f(0, 1, 1), new Vector3f(1, 1, 1));
-        lightCube = new GameObject(3, light.pos, new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+        //object = new GameObject(0, new Vector3f(0, 0.5f, -5), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+        //light = new Light(new Vector3f(0, 1, 1), new Vector3f(1, 1, 1));
+        //lightCube = new GameObject(3, light.pos, new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 
         //terrains.add(new Terrain(0, 0, "/textures/grass_top.png"));
         //terrains.add(new Terrain(1, 0, "/textures/grass_top.png"));
         //GameObjects
     }
 
-    //Loading game content
+    //Loading game resources and graphics
     private void preInit() {
         System.out.println("- Pre Init");
+        resourceManager = ResourceManager.getInstance();
+
+        //Read all files textures directory and register all textures
+        String ogPath = "resources/textures/";      //This is here to allow for registry names to be properly created
+        FileUtils.recursiveLoop(new FileCallback() {
+            @Override
+            public void call(File file, String path) {
+                String registry = file.getPath().replace(ogPath, "").replace(".png", "");
+                resourceManager.register(file.getPath(), registryID, registry);
+            }
+        }, ogPath);
+    }
+
+    //Loading game content
+    private void init() {
+        System.out.println("- Init");
         blockManager = BlockManager.getInstance();
 
         blockManager.register(new dirt(), registryID, "dirt");
@@ -194,7 +209,7 @@ public class main implements Runnable {
         blockManager.register(new glass(), registryID, "glass");
         blockManager.register(new stairs(), registryID, "stairs");
 
-
+        blockManager.registerBlockModels();
 
         //Create world
         world = new Dimension("earth");
@@ -205,16 +220,6 @@ public class main implements Runnable {
         //Guis
 
         //objectMasterList.add(object);
-        objectMasterList.add(lightCube);
-
-        for(GameObject object : objectMasterList) {
-            masterRenderer.processObject(object);
-        }
-    }
-
-    //Loading graphics related content
-    private void init() {
-        System.out.println("- Init");
     }
 
     //Finalise
@@ -304,7 +309,7 @@ public class main implements Runnable {
 
     }
 
-    private void close() {
+    private void close(boolean error) {
         window.destroy();
         for(Mesh mesh : meshes) {
             mesh.destroy();
@@ -313,7 +318,10 @@ public class main implements Runnable {
         terrainShader.destroy();
         guiShader.destroy();
         masterRenderer.destroy();
-        System.out.println("Goodbye :)");
+
+        if(!error) {
+            System.out.println("Goodbye :)");
+        }
     }
 
     public static void main(String[] args) {

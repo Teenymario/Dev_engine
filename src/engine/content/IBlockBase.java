@@ -1,12 +1,9 @@
 package engine.content;
 
-import engine.graphics.models.blocks.BlockModel;
+import engine.graphics.models.BlockModel;
 import engine.maths.Vector3i;
 
 public interface IBlockBase {
-    short ID = 0;
-    BlockModel model = null;
-
     BlockModel getModel();
     void setModel(BlockModel model);
 

@@ -1,15 +1,11 @@
 package engine.content.blocks;
 
 import engine.content.BlockBase;
-import engine.graphics.models.blocks.BlockModel;
+import engine.graphics.models.BlockModel;
 
 public class dirt extends BlockBase {
     public static Short ID;
     public static BlockModel model;
-
-    public dirt() {
-
-    }
 
     @Override
     public BlockModel getModel() {
