@@ -1,7 +1,7 @@
 package engine.graphics;
 
-import engine.maths.Vector2f;
-import engine.maths.Vector3f;
+import static engine.maths.Vector2.Vector2f;
+import static engine.maths.Vector3.Vector3f;
 
 public class Vertex {
     private Vector3f pos, normal;

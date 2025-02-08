@@ -2,9 +2,10 @@ package engine.objects;
 
 import engine.IO.Input;
 import engine.maths.Matrix4f;
-import engine.maths.Vector3f;
 import main.main;
 import org.lwjgl.glfw.GLFW;
+
+import static engine.maths.Vector3.Vector3f;
 
 import static main.main.sensitivity;
 import static main.main.speed;
@@ -14,6 +15,7 @@ public class Camera {
     private float horizAngle, vertAngle, distance = 2;
     private int oldX = 0, oldY = 0, newX, newY;
     public Matrix4f viewMatrix;
+    private boolean updateMatrix;
 
     public Camera(Vector3f pos, Vector3f rot) {
         this.pos = pos;
@@ -22,7 +24,6 @@ public class Camera {
     }
 
     public void updateVisual() {
-        boolean updateMatrix = false;
         newX = Input.getMouseX();
         newY = Input.getMouseY();
 
@@ -74,12 +75,11 @@ public class Camera {
         }
 
         if(updateMatrix) {
-            this.viewMatrix = Matrix4f.view(pos, rot);
+            this.viewMatrix.optimisedView(pos, rot);
         }
     }
 
     public void updateVisual(GameObject target) {
-        boolean updateMatrix = false;
         newX = Input.getMouseX();
         newY = Input.getMouseY();
 
@@ -115,7 +115,7 @@ public class Camera {
         rot.y = -horizAngle;
 
         if(updateMatrix) {
-            this.viewMatrix = Matrix4f.view(pos, rot);
+            this.viewMatrix.optimisedView(pos, rot);
         }
 
         oldX = newX;

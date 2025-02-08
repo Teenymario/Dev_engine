@@ -1,6 +1,5 @@
 package engine.graphics;
 
-import engine.maths.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.newdawn.slick.opengl.PNGDecoder;
@@ -8,6 +7,8 @@ import org.newdawn.slick.opengl.PNGDecoder;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+
+import static engine.maths.Vector3.Vector3f;
 
 public class Material {
     private String path;

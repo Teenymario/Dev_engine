@@ -1,6 +1,6 @@
 package engine.objects;
 
-import engine.maths.Vector3f;
+import static engine.maths.Vector3.Vector3f;
 
 public class Light {
 

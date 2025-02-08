@@ -1,7 +1,8 @@
 package engine.objects;
 
 import engine.maths.Matrix4f;
-import engine.maths.Vector3f;
+
+import static engine.maths.Vector3.Vector3f;
 
 public class GameObject {
     public int meshID;

@@ -8,7 +8,6 @@ import engine.graphics.*;
 import engine.graphics.renderers.GUIRenderer;
 import engine.graphics.renderers.GameObjectRenderer;
 import engine.graphics.renderers.TerrainRenderer;
-import engine.maths.Vector3f;
 import engine.objects.Camera;
 import engine.objects.GUITexture;
 import engine.objects.GameObject;
@@ -21,6 +20,8 @@ import org.lwjgl.glfw.GLFW;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import static engine.maths.Vector3.Vector3f;
 
 public class main implements Runnable {
     //Core values
@@ -91,6 +92,11 @@ public class main implements Runnable {
     }
 
     public void run() {
+        //try {
+        //    Thread.sleep(5000);
+        //} catch (InterruptedException e) {
+        //    e.printStackTrace();
+        //}
         System.out.println("Started loading sequence");
 
         //Setup engine
@@ -127,7 +133,7 @@ public class main implements Runnable {
                 delta--;
             }
 
-            //render();
+            render();
             frames++;
 
             if (System.currentTimeMillis() - timer > 1000) {
@@ -168,13 +174,15 @@ public class main implements Runnable {
         //ObjectMesh.construct("resources/models/Grass_Block.obj").constructMesh();
         //ObjectMesh.construct("resources/models/Dirt_Block.obj").constructMesh();
         //ObjectMesh.construct("resources/models/Stone_Block.obj").constructMesh();
-        //ObjectMesh.construct("resources/models/light.obj").constructMesh();
+        ObjectMesh.construct("resources/models/light.obj").constructMesh();
+
         //Meshes
 
         //GameObjects
         //object = new GameObject(0, new Vector3f(0, 0.5f, -5), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-        //light = new Light(new Vector3f(0, 1, 1), new Vector3f(1, 1, 1));
-        //lightCube = new GameObject(3, light.pos, new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+        light = new Light(new Vector3f(0, 1, 1), new Vector3f(1, 1, 1));
+        lightCube = new GameObject(0, light.pos, new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
+        masterRenderer.processObject(lightCube);
 
         //terrains.add(new Terrain(0, 0, "/textures/grass_top.png"));
         //terrains.add(new Terrain(1, 0, "/textures/grass_top.png"));
@@ -190,11 +198,12 @@ public class main implements Runnable {
         String ogPath = "resources/textures/";      //This is here to allow for registry names to be properly created
         FileUtils.recursiveLoop(new FileCallback() {
             @Override
-            public void call(File file, String path) {
+            public void call(File file) {
                 String registry = file.getPath().replace(ogPath, "").replace(".png", "");
                 resourceManager.register(file.getPath(), registryID, registry);
             }
         }, ogPath);
+        resourceManager.e();
     }
 
     //Loading game content
@@ -219,7 +228,7 @@ public class main implements Runnable {
         //guis.add(new GUITexture(0, new Vector2f(0f, 0f), new Vector2f(0.02f, 0.02f), "/textures/gui/cursor.png"));
         //Guis
 
-        //objectMasterList.add(object);
+        objectMasterList.add(lightCube);
     }
 
     //Finalise

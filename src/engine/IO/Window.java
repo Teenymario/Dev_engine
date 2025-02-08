@@ -1,13 +1,14 @@
 package engine.IO;
 
 import engine.maths.Matrix4f;
-import engine.maths.Vector3f;
 import main.main;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+
+import static engine.maths.Vector3.Vector3f;
 
 public class Window {
     private int width, height;

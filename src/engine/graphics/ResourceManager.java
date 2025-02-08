@@ -22,6 +22,10 @@ public class ResourceManager {
         }
     }
 
+    public void e() {
+        new TextureAtlas(textures.values().toArray(new Texture[0]));
+    }
+
     public Texture getTexture(String registry) {
         return textures.get(registry);
     }

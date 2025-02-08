@@ -4,8 +4,9 @@ import engine.graphics.Material;
 import engine.graphics.Mesh;
 import engine.graphics.Vertex;
 import engine.maths.Matrix4f;
-import engine.maths.Vector2f;
-import engine.maths.Vector3f;
+
+import static engine.maths.Vector2.Vector2f;
+import static engine.maths.Vector3.Vector3f;
 
 public class Terrain {
 

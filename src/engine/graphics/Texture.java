@@ -11,6 +11,7 @@ import java.nio.ByteBuffer;
 public class Texture {
     public int textureID;
     public int width, height;
+    public ByteBuffer imgData;
 
     public Texture(String path) {
         try {
@@ -19,6 +20,7 @@ public class Texture {
             ByteBuffer buf = ByteBuffer.allocateDirect(4 * decoder.getWidth() * decoder.getHeight());
             decoder.decode(buf, decoder.getWidth() * 4, PNGDecoder.RGBA);
             buf.flip();
+            imgData = buf;
 
             textureID = GL11.glGenTextures();
             width = decoder.getWidth();

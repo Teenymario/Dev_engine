@@ -1,9 +1,6 @@
 package engine.graphics.renderers;
 
 import engine.IO.Window;
-import engine.graphics.ChunkMesher;
-import engine.maths.Vector3f;
-import engine.maths.Vector3i;
 import engine.content.BlockBase;
 import engine.world.terrain.Chunk;
 import engine.graphics.Mesh;
@@ -14,7 +11,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 
-import java.util.Arrays;
+import static engine.maths.Vector3.Vector3f;
+import static engine.maths.Vector3.Vector3i;
 
 public class TerrainRenderer implements ITerrainRenderer {
     private Shader shader;

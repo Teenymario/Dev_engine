@@ -1,5 +1,8 @@
 package engine.maths;
 
+import static engine.maths.Vector2.Vector2f;
+import static engine.maths.Vector3.Vector3f;
+
 public class Matrix4f {
     public static final int SIZE = 4;
     public float[] elements = new float[SIZE * SIZE];
@@ -129,6 +132,43 @@ public class Matrix4f {
         Matrix4f rotMatrix = Matrix4f.multiply(rotZMatrix, Matrix4f.multiply(rotYMatrix, rotXMatrix));
 
         return Matrix4f.multiply(transMatrix, rotMatrix);
+    }
+
+    //Please dont touch this, its already messy enough
+    public void optimisedView(Vector3f pos, Vector3f rot) {
+        //Creating variables for each axis for sin and cos
+        float θx = (float) -Math.toRadians(rot.x);
+        float sinx = (float) Math.sin(θx);
+        float cosx = (float) Math.cos(θx);
+
+        float θy = (float) -Math.toRadians(rot.y);
+        float siny = (float) Math.sin(θy);
+        float cosy = (float) Math.cos(θy);
+
+        float θz = (float) -Math.toRadians(rot.z);
+        float sinz = (float) Math.sin(θz);
+        float cosz = (float) Math.cos(θz);
+
+        //Putting elements in one by one to avoid method calls
+        elements[0] = cosy * cosz;
+        elements[1] = -cosy * sinz;
+        elements[2] = siny;
+        elements[3] = -pos.x * elements[0] + -pos.y * elements[1] + -pos.z * elements[2];
+
+        elements[4] = sinx * siny * cosz + cosx * sinz;
+        elements[5] = -sinx * siny * sinz + cosx * cosz;
+        elements[6] = -sinx * cosy;
+        elements[7] = -pos.x * elements[4] + -pos.y * elements[5] + -pos.z * elements[6];
+
+        elements[8] = -cosx * siny * cosz + sinx * sinz;
+        elements[9] = cosx * siny * sinz + sinx * cosz;
+        elements[10] = cosx * cosy;
+        elements[11] = -pos.x * elements[8] + -pos.y * elements[9] + -pos.z * elements[10];
+
+        elements[12] = 0;
+        elements[13] = 0;
+        elements[14] = 0;
+        elements[15] = 1;
     }
 
     public static Matrix4f multiply(Matrix4f matrix, Matrix4f other) {

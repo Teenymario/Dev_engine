@@ -1,9 +1,5 @@
 package engine.graphics;
 
-
-import engine.maths.Vector2f;
-import engine.maths.Vector3f;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -11,6 +7,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static engine.maths.Vector2.Vector2f;
+import static engine.maths.Vector3.Vector3f;
 
 public class ObjectMesh {
 

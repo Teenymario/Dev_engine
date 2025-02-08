@@ -1,6 +1,6 @@
 package engine.world.terrain;
 
-import engine.maths.Vector3i;
+import static engine.maths.Vector3.Vector3i;
 
 public class Chunk {
     public static final int SIZE = 8;

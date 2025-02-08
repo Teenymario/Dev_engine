@@ -1,7 +1,8 @@
 package engine.content;
 
 import engine.graphics.models.BlockModel;
-import engine.maths.Vector3i;
+
+import static engine.maths.Vector3.Vector3i;
 
 public abstract class BlockBase implements IBlockBase {
     private Vector3i pos;

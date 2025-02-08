@@ -1,13 +1,14 @@
 package engine.objects;
 
 import engine.maths.Matrix4f;
-import engine.maths.Vector2f;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.opengl.PNGDecoder;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+
+import static engine.maths.Vector2.Vector2f;
 
 public class GUITexture {
     public int id;
