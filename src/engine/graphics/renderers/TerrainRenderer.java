@@ -69,12 +69,12 @@ public class TerrainRenderer implements ITerrainRenderer {
         GL30.glDisableVertexAttribArray(1);
         GL30.glDisableVertexAttribArray(0);
         GL30.glBindVertexArray(0);
-        GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+        //GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
         enableCulling();
     }
 
     public void prepareInstance(BlockBase block, Light light) {
-        GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+        //GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
         shader.setUniform("blockPos", blockPos);
         shader.setUniform("cameraPos", main.camera.pos);
         shader.setUniform("view", main.camera.viewMatrix);

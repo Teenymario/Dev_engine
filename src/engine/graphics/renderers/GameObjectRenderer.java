@@ -54,10 +54,12 @@ public class GameObjectRenderer implements IGameObjectRenderer {
         GL30.glDisableVertexAttribArray(1);
         GL30.glDisableVertexAttribArray(0);
         GL30.glBindVertexArray(0);
+        //GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
         enableCulling();
     }
 
     public void prepareInstance(GameObject object, Light light) {
+        //GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
         shader.setUniform("model", object.transformMatrix());
         shader.setUniform("view", main.camera.viewMatrix);
         shader.setUniform("project", window.getProjectionMatrix());

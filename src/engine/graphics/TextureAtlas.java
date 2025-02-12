@@ -4,7 +4,6 @@ import java.nio.ByteBuffer;
 import java.util.*;
 
 import static engine.maths.Vector2.Vector2i;
-import static engine.maths.Vector2.Vector2f;
 
 //Create single large image to map textures to for rendering
 public class TextureAtlas {
@@ -37,35 +36,68 @@ public class TextureAtlas {
             this.size += sortedTextures.get(size).size() * (size * size);
         }
         System.out.println(nextPower(size));
-        size = (int) (Math.log(nextPower(size)) / Math.log(2));
+        size = nextPower((int) Math.ceil(Math.sqrt(size)));
         System.out.println(size);
         ByteBuffer buffer = ByteBuffer.allocateDirect(4 * size * size);
 
         Vector2i pen = new Vector2i(0, 0);
         for(int texSize : sizes) {
             for(Texture texture : sortedTextures.get(texSize)) {
-                if (pen.x + texSize > size) {
-                    // Move to next row
+
+                //Read texture data into atlas buffer
+                for(int y = 0; y < texSize; y++) {
+                    buffer.position((pen.y + y) * 4 * size + pen.x * 4);
+                    for(int x = 0; x < texSize; x++) {
+                        buffer.put(texture.imgData.get());
+                        buffer.put(texture.imgData.get());
+                        buffer.put(texture.imgData.get());
+                        buffer.put(texture.imgData.get());
+                    }
+                }
+                texture.imgData.flip();
+
+                pen.x += texSize;
+
+                if(!ladder.isEmpty() && ladder.peekLast().y == pen.y + texSize) {
+                    ladder.peekLast().x = pen.x;
+                } else {
+                    ladder.addLast(new Vector2i(pen.x, pen.y + texSize));
+                }
+
+                if(pen.x == size) {
+                    ladder.removeLast();
                     pen.y += texSize;
-                    if (!ladder.isEmpty()) {
-                        pen.x = ladder.getLast().x;
+
+                    if(!ladder.isEmpty()) {
+                        pen.x = ladder.peekLast().x;
                     } else {
                         pen.x = 0;
                     }
                 }
-
-                for(int y = 0; y < texSize; y++) {
-                    buffer.position(((pen.y + y) * size + pen.x) * 4);
-                    for(int x = 0; x < texSize; x++) {
-                        buffer.put(texture.imgData.get(y * texture.width + x));
-                    }
-                }
             }
         }
+        buffer.position(0);
+
+        /*BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        for (int y = 0; y < size; y++) {
+            for (int x = 0; x < size; x++) {
+                int r = buffer.get() & 0xFF;
+                int g = buffer.get() & 0xFF;
+                int b = buffer.get() & 0xFF;
+                int a = buffer.get() & 0xFF; // Ensure your format has alpha!
+
+                int argb = (a << 24) | (r << 16) | (g << 8) | b;
+                img.setRGB(x, y, argb);
+            }
+        }
+        try {
+            ImageIO.write(img, "png", new File("output.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }*/
     }
 
     private int nextPower(int v) {
-        v--;
         v |= v >> 1;
         v |= v >> 2;
         v |= v >> 4;
