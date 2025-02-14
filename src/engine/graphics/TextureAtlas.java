@@ -15,7 +15,7 @@ public class TextureAtlas {
      * @param textures A list of unsorted textures (do not sort your textures by size the constructor will)
      */
     public TextureAtlas(Texture[] textures) {
-        HashMap<Integer, ArrayList<Texture>> sortedTextures = new HashMap<>();       //Arraylist of texture arrays for all textures of specific sizes, starting with smallest and ending with smallest
+        HashMap<Integer, ArrayList<Texture>> sortedTextures = new HashMap<>();       //Arraylist of texture arrays for all textures of specific sizes, starting with largest and ending with smallest
         ArrayList<Integer> sizes = new ArrayList<>();
 
         for(Texture texture : textures) {
