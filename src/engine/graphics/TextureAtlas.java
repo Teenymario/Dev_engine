@@ -1,5 +1,9 @@
 package engine.graphics;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.*;
 
@@ -78,7 +82,7 @@ public class TextureAtlas {
         }
         buffer.position(0);
 
-        /*BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         for (int y = 0; y < size; y++) {
             for (int x = 0; x < size; x++) {
                 int r = buffer.get() & 0xFF;
@@ -94,7 +98,9 @@ public class TextureAtlas {
             ImageIO.write(img, "png", new File("output.png"));
         } catch (IOException e) {
             e.printStackTrace();
-        }*/
+        }
+
+        atlas = new Texture(buffer, size, size);
     }
 
     private int nextPower(int v) {

@@ -1,12 +1,14 @@
 package engine.graphics;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 
 import static main.main.concat;
 
 public class ResourceManager {
     private static final ResourceManager singleton = new ResourceManager();
-    public final HashMap<String, Texture> textures = new HashMap<>();
+    public final HashMap<String, Texture> textures = new LinkedHashMap<>();
+    public TextureAtlas atlas;
 
     private ResourceManager() {}
 
@@ -22,8 +24,9 @@ public class ResourceManager {
         }
     }
 
-    public void e() {
-        new TextureAtlas(textures.values().toArray(new Texture[0]));
+    public void registerAtlas() {
+        atlas = new TextureAtlas(textures.values().toArray(new Texture[0]));
+        //textures.clear();     Uncomment once shaders are updated to handle an atlas
     }
 
     public Texture getTexture(String registry) {

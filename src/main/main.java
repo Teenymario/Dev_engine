@@ -92,11 +92,11 @@ public class main implements Runnable {
     }
 
     public void run() {
-        //try {
-        //    Thread.sleep(5000);
-        //} catch (InterruptedException e) {
-        //    e.printStackTrace();
-        //}
+        /*try {
+            Thread.sleep(7000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
         System.out.println("Started loading sequence");
 
         //Setup engine
@@ -196,14 +196,15 @@ public class main implements Runnable {
 
         //Read all files textures directory and register all textures
         String ogPath = "resources/textures/";      //This is here to allow for registry names to be properly created
-        FileUtils.recursiveLoop(new FileCallback() {
+        FileUtils.recursiveLoopAlphabetic(new FileCallback() {
             @Override
             public void call(File file) {
                 String registry = file.getPath().replace(ogPath, "").replace(".png", "");
                 resourceManager.register(file.getPath(), registryID, registry);
             }
         }, ogPath);
-        resourceManager.e();
+        resourceManager.registerAtlas();
+        System.gc();
     }
 
     //Loading game content
