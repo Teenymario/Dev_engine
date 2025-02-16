@@ -56,7 +56,7 @@ public class FileUtils {
         File[] resources = new File(path).listFiles();
         assert resources != null;
 
-        // Sort files alphabetically (directories and files together)
+        //Sort files alphabetically (directories and files together)
         Arrays.sort(resources, (a, b) -> a.getName().compareToIgnoreCase(b.getName()));
 
         for (File file : resources) {
@@ -64,6 +64,43 @@ public class FileUtils {
                 if (!path.endsWith("/")) path = path + "/";
                 recursiveLoopAlphabetic(callback, concat(path, file.getName(), "/"));
             } else {
+                callback.call(file);
+            }
+        }
+    }
+
+    /**
+     * Loops over all of the files of a given directory.
+     * Calls a provided callback function for each file that is looped over (Override the call method in {@link engine.utils.FileCallback#call(File)})
+     * @param callback Callback function that will be called for every file with said file being provided as an argument
+     * @param path The directory to loop over
+     */
+    public static void Loop(FileCallback callback, String path) {
+        File[] resources = new File(path).listFiles();
+        assert resources != null;
+
+        for (File file : resources) {
+            if (!file.isDirectory()) {
+                callback.call(file);
+            }
+        }
+    }
+
+    /**
+     * Loops over all of the files of a given directory in alphabetical order.
+     * Calls a provided callback function for each file that is looped over (Override the call method in {@link engine.utils.FileCallback#call(File)})
+     * @param callback Callback function that will be called for every file with said file being provided as an argument
+     * @param path The directory to loop over
+     */
+    public static void LoopAlphabetic(FileCallback callback, String path) {
+        File[] resources = new File(path).listFiles();
+        assert resources != null;
+
+        //Sort files alphabetically (directories and files together)
+        Arrays.sort(resources, (a, b) -> a.getName().compareToIgnoreCase(b.getName()));
+
+        for (File file : resources) {
+            if (!file.isDirectory()) {
                 callback.call(file);
             }
         }
