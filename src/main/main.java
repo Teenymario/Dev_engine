@@ -37,6 +37,7 @@ public class main implements Runnable {
     public static List<GameObject> objectMasterList = new ArrayList<>();
     public static List<Mesh> meshes = new ArrayList<>();
     public static List<GUITexture> guis = new ArrayList<>();
+    public static String OS = System.getProperty("os.name").toLowerCase();
 
     //Rendering values
     public final int WIDTH = 1280, HEIGHT = 760;
@@ -195,14 +196,20 @@ public class main implements Runnable {
         resourceManager = ResourceManager.getInstance();
 
         //Read all files textures directory and register all textures
-        String ogPath = "resources/textures/";      //This is here to allow for registry names to be properly created
+        String ogPath;
+        if(OS.contains("winsdfgsdfgsdfg")) {
+            ogPath = "resources\\textures\\";
+        } else {
+            ogPath = "resources/textures/";
+        }
+
         FileUtils.recursiveLoopAlphabetic(new FileCallback() {
             @Override
             public void call(File file) {
                 String registry = file.getPath().replace(ogPath, "").replace(".png", "");
                 resourceManager.register(file.getPath(), registryID, registry);
             }
-        }, ogPath);
+        }, "resources/textures/");
         resourceManager.registerAtlas();
         System.gc();
     }
