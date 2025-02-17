@@ -197,7 +197,7 @@ public class main implements Runnable {
 
         //Read all files textures directory and register all textures
         String ogPath;
-        if(OS.contains("winsdfgsdfgsdfg")) {
+        if(OS.contains("win")) {
             ogPath = "resources\\textures\\";
         } else {
             ogPath = "resources/textures/";
