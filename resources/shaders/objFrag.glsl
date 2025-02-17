@@ -1,5 +1,4 @@
 #version 460 core
-#define MAX_TEXTURES 16
 
 in vec2 passTextureCoord;
 in vec3 surfaceNorm;
@@ -10,10 +9,14 @@ in float fmaterialID;
 
 out vec4 outColor;
 
-uniform sampler2D textureSampler[MAX_TEXTURES];
 uniform vec3 lightCol;
 uniform vec3 skyColor;
-uniform float materials[512];
+
+layout(binding = 0, std430) buffer TextureCoords {
+    vec4 texCoords[];
+};
+
+uniform sampler2D textureAtlas;
 
 /*
 Definitions of material in float[] form
@@ -27,33 +30,7 @@ Definitions of material in float[] form
 13, 14, 15 = emmisive
 */
 
-vec4 defineColor(int materialID) {
-    vec3 unitNormal = normalize(surfaceNorm);
-    vec3 unitLightVec = normalize(toLighVec);
-
-    float nDotL = dot(unitNormal, unitLightVec);
-    float brightness = max(nDotL, 0.2);
-    vec3 diffuse = vec3(materials[materialID * 16 + 7], materials[materialID * 16 + 8], materials[materialID * 16 + 9]) * lightCol * brightness;
-
-    float specularFactor = dot(normalize(toCamVec), reflect(-unitLightVec, unitNormal));
-    specularFactor = max(specularFactor, 0.0);
-    float dampedFactor = pow(specularFactor, materials[materialID * 16 + 2]);
-    vec3 specular = vec3(materials[materialID * 16 + 10], materials[materialID * 16 + 11], materials[materialID * 16 + 12]) * dampedFactor * lightCol;
-
-    return vec4(diffuse, 1.0) + vec4(specular, 1.0) * vec4(materials[materialID * 16 + 4], materials[materialID * 16 + 5], materials[materialID * 16 + 6], materials[materialID * 16 + 1]);
-}
-
 void main() {
-    int materialID = int(fmaterialID + 0.5);
-
-    if(materials[materialID * 16] != -1) {
-        vec4 textureColor = texture(textureSampler[int(materials[materialID * 16] + 0.5)], passTextureCoord);
-        if(textureColor.a < 0.0001 || visibility < 0.0001) {
-            discard;
-        }
-
-        outColor = mix(vec4(skyColor, 1.0), defineColor(materialID) * textureColor, visibility);
-    } else {
-        outColor = mix(vec4(skyColor, 1.0), defineColor(materialID), visibility);
-    }
+    outColor = texture(textureAtlas, passTextureCoord);
+    //outColor = mix(vec4(skyColor, 1.0), texture(textureAtlas, passTextureCoord), visibility);
 }

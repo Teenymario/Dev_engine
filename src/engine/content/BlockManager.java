@@ -50,7 +50,7 @@ public class BlockManager {
         for(String registry : registries) {
             BlockModel model = new BlockModel();
 
-            try(BufferedReader reader = new BufferedReader(new FileReader(concat("resources/models/", registry.split(":")[1], ".model")))) {
+            try(BufferedReader reader = new BufferedReader(new FileReader(concat("resources/models/blocks/", registry.split(":")[1], ".model")))) {
                 while((line = reader.readLine()) != null) {
                     tokens = line.split(" ");
 

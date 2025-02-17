@@ -25,13 +25,4 @@ void main() {
     vec4 posRelativeToCam = view * worldPos;
     gl_Position = project * posRelativeToCam;
     passTextureCoord = textureCoord;
-
-    surfaceNorm = (model * vec4(normal, 0.0)).xyz;
-    toLighVec = lightPos - worldPos.xyz;
-    toCamVec = (inverse(view) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPos.xyz;
-
-    float distance = length(posRelativeToCam.xyz);
-    visibility = exp(-pow((distance * density), gradient));
-    visibility = 1.0;
-    fmaterialID = float(material);
 }

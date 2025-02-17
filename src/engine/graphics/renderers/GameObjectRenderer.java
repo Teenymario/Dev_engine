@@ -67,12 +67,14 @@ public class GameObjectRenderer implements IGameObjectRenderer {
         shader.setUniform("lightCol", light.color);
         shader.setUniform("skyColor", window.background);
         shader.setUniform("materials", main.meshes.get(object.meshID).materials);
-        for (int i = 0; i < main.meshes.get(object.meshID).textures(); i++) {
-            GL30.glActiveTexture(GL30.GL_TEXTURE0 + i);
-            GL30.glBindTexture(GL30.GL_TEXTURE_2D, main.meshes.get(object.meshID).textureIDs()[i]);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-            shader.setUniform("textureSampler[" + i + "]", i);
-        }
+        GL30.glBindTexture(GL30.GL_TEXTURE_2D, main.resourceManager.atlasID);
+
+        //for (int i = 0; i < main.meshes.get(object.meshID).textures(); i++) {
+        //    GL30.glActiveTexture(GL30.GL_TEXTURE0 + i);
+        //    GL30.glBindTexture(GL30.GL_TEXTURE_2D, main.meshes.get(object.meshID).textureIDs()[i]);
+        //    GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+        //    shader.setUniform("textureSampler[" + i + "]", i);
+        //}
     }
 
     public Shader getShader() {

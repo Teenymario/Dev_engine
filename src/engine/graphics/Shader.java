@@ -11,6 +11,7 @@ import java.nio.FloatBuffer;
 import static engine.maths.Vector2.Vector2f;
 import static engine.maths.Vector3.Vector3i;
 import static engine.maths.Vector3.Vector3f;
+import static engine.maths.Vector4.Vector4f;
 
 public class Shader {
     private String vertFile, fragFile;

@@ -5,6 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.util.*;
 
 import static engine.maths.Vector2.Vector2i;
@@ -12,7 +13,8 @@ import static engine.maths.Vector2.Vector2i;
 //Create single large image to map textures to for rendering
 public class TextureAtlas {
     public int size;
-    public Texture atlas;
+    public ByteBuffer imgData;
+    public FloatBuffer coordData;   //4 floats for a single image
 
     /**
      * Returns a texture atlas object that stores a bytebuffer of a single large image created from a collection of other images provided to it using a packing algorithm.
@@ -34,6 +36,7 @@ public class TextureAtlas {
 
         sizes.sort(Collections.reverseOrder());
         Deque<Vector2i> ladder = new ArrayDeque<>();
+        coordData = FloatBuffer.allocate(textures.length * 4);
 
         //Calculate total area of texture atlas
         for(int size : sizes) {
@@ -42,7 +45,7 @@ public class TextureAtlas {
         System.out.println(nextPower(size));
         size = nextPower((int) Math.ceil(Math.sqrt(size)));
         System.out.println(size);
-        ByteBuffer buffer = ByteBuffer.allocateDirect(4 * size * size);
+        imgData = ByteBuffer.allocateDirect(4 * size * size);
 
         Vector2i pen = new Vector2i(0, 0);
         for(int texSize : sizes) {
@@ -50,15 +53,20 @@ public class TextureAtlas {
 
                 //Read texture data into atlas buffer
                 for(int y = 0; y < texSize; y++) {
-                    buffer.position((pen.y + y) * 4 * size + pen.x * 4);
+                    imgData.position((pen.y + y) * 4 * size + pen.x * 4);
                     for(int x = 0; x < texSize; x++) {
-                        buffer.put(texture.imgData.get());
-                        buffer.put(texture.imgData.get());
-                        buffer.put(texture.imgData.get());
-                        buffer.put(texture.imgData.get());
+                        imgData.put(texture.imgData.get());
+                        imgData.put(texture.imgData.get());
+                        imgData.put(texture.imgData.get());
+                        imgData.put(texture.imgData.get());
                     }
                 }
-                texture.imgData.flip();
+                texture.imgData.position(0);
+
+                coordData.put(pen.x);
+                coordData.put(pen.y);
+                coordData.put(pen.x + texSize);
+                coordData.put(pen.y + texSize);
 
                 pen.x += texSize;
 
@@ -80,15 +88,17 @@ public class TextureAtlas {
                 }
             }
         }
-        buffer.position(0);
+        imgData.position(0);
+        coordData.position(0);
+
 
         BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         for (int y = 0; y < size; y++) {
             for (int x = 0; x < size; x++) {
-                int r = buffer.get() & 0xFF;
-                int g = buffer.get() & 0xFF;
-                int b = buffer.get() & 0xFF;
-                int a = buffer.get() & 0xFF; // Ensure your format has alpha!
+                int r = imgData.get() & 0xFF;
+                int g = imgData.get() & 0xFF;
+                int b = imgData.get() & 0xFF;
+                int a = imgData.get() & 0xFF;
 
                 int argb = (a << 24) | (r << 16) | (g << 8) | b;
                 img.setRGB(x, y, argb);
@@ -100,7 +110,7 @@ public class TextureAtlas {
             e.printStackTrace();
         }
 
-        atlas = new Texture(buffer, size, size);
+        imgData.flip();
     }
 
     private int nextPower(int v) {
