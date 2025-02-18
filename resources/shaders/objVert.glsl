@@ -13,7 +13,7 @@ uniform mat4 project;
 uniform int blockID;
 
 layout(binding = 0, std430) buffer TextureCoords {
-    float texCoords[];
+    vec2 texCoords[];
 };
 
 const float density = 0.07;
@@ -22,7 +22,7 @@ const float gradient = 1.5;
 void main() {
     vec4 posRelativeToCam = view * vec4(pos, 1.0);
     gl_Position = project * posRelativeToCam;
-    passTextureCoord = vec2(texCoords[blockID], texCoords[blockID + 1]);
+    passTextureCoord = texCoords[int(floor(gl_Position.y)) + 4];
 
     float distance = length(posRelativeToCam.xyz);
     visibility = exp(-pow((distance * density), gradient));

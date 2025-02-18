@@ -50,7 +50,8 @@ public class ResourceManager {
         coordSSBO = GL30.glGenBuffers();
         GL30.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, coordSSBO);  // Bind SSBO
         GL30.glBufferData(GL43.GL_SHADER_STORAGE_BUFFER, atlas.coordData, GL15.GL_STATIC_DRAW);
-        GL30.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, 0); // Unbind
+        GL30.glBindBufferBase(GL43.GL_SHADER_STORAGE_BUFFER, 0, coordSSBO);
+        GL30.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, 0);// Unbind
 
         //textures.clear();     Uncomment once shaders are updated to handle an atlas
     }

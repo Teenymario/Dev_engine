@@ -1,5 +1,7 @@
 package engine.graphics;
 
+import org.lwjgl.BufferUtils;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -36,7 +38,7 @@ public class TextureAtlas {
 
         sizes.sort(Collections.reverseOrder());
         Deque<Vector2i> ladder = new ArrayDeque<>();
-        coordData = FloatBuffer.allocate(textures.length * 4);
+        coordData = BufferUtils.createFloatBuffer(textures.length * 4);
 
         //Calculate total area of texture atlas
         for(int size : sizes) {

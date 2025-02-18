@@ -6,17 +6,21 @@ import engine.graphics.Shader;
 import engine.objects.GameObject;
 import engine.objects.Light;
 import main.main;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 
+import java.nio.FloatBuffer;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
 public class GameObjectRenderer implements IGameObjectRenderer {
     private Shader shader;
     private Window window;
+    static boolean once = false;
 
     public GameObjectRenderer(Shader shader) {
         this.shader = shader;
@@ -62,9 +66,7 @@ public class GameObjectRenderer implements IGameObjectRenderer {
         shader.setUniform("view", main.camera.viewMatrix);
         shader.setUniform("project", window.getProjectionMatrix());
         shader.setUniform("skyColor", window.background);
-        shader.setUniform("blockID", 50);
-        GL30.glBindTexture(GL30.GL_TEXTURE_2D, main.resourceManager.atlasID);
-        GL43.glBindBufferBase(GL43.GL_SHADER_STORAGE_BUFFER, 0, main.resourceManager.coordSSBO);
+        shader.setUniform("blockID", 0);
     }
 
     public Shader getShader() {
