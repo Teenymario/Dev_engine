@@ -63,6 +63,10 @@ public class TextureAtlas {
                 }
                 texture.imgData.position(0);
 
+                /*
+                Ok now the issue here is that we want to load up the texture values up to here, but the only issue that we have is that well,
+                we kinda need to align these to the ID's of the blocks.
+                 */
                 coordData.put(pen.x);
                 coordData.put(pen.y);
                 coordData.put(pen.x + texSize);

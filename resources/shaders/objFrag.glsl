@@ -9,12 +9,7 @@ in float fmaterialID;
 
 out vec4 outColor;
 
-uniform vec3 lightCol;
 uniform vec3 skyColor;
-
-layout(binding = 0, std430) buffer TextureCoords {
-    vec4 texCoords[];
-};
 
 uniform sampler2D textureAtlas;
 
@@ -31,6 +26,6 @@ Definitions of material in float[] form
 */
 
 void main() {
-    outColor = texture(textureAtlas, passTextureCoord);
-    //outColor = mix(vec4(skyColor, 1.0), texture(textureAtlas, passTextureCoord), visibility);
+    //outColor = texture(textureAtlas, passTextureCoord);
+    outColor = mix(vec4(skyColor, 1.0), texture(textureAtlas, passTextureCoord), visibility);
 }

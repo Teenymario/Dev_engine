@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
@@ -33,10 +34,9 @@ public class ResourceManager {
 
     public void registerAtlas() {
         atlas = new TextureAtlas(textures.values().toArray(new Texture[0]));
-        atlasID = GL11.glGenTextures();
-        coordSSBO = GL30.glGenBuffers();
 
         //Upload atlas texture
+        atlasID = GL11.glGenTextures();
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, atlasID);
 
         GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, atlas.size, atlas.size, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, atlas.imgData);
@@ -47,8 +47,9 @@ public class ResourceManager {
         GL30.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 
         //Upload texture coords
+        coordSSBO = GL30.glGenBuffers();
+        GL30.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, coordSSBO);  // Bind SSBO
         GL30.glBufferData(GL43.GL_SHADER_STORAGE_BUFFER, atlas.coordData, GL15.GL_STATIC_DRAW);
-        GL30.glBindBufferBase(GL43.GL_SHADER_STORAGE_BUFFER, 0, coordSSBO);  // Bind SSBO to binding point 0
         GL30.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, 0); // Unbind
 
         //textures.clear();     Uncomment once shaders are updated to handle an atlas

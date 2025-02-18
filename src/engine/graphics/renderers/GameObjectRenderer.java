@@ -9,6 +9,7 @@ import main.main;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL43;
 
 import java.util.List;
 import java.util.Map;
@@ -42,14 +43,12 @@ public class GameObjectRenderer implements IGameObjectRenderer {
         GL30.glEnableVertexAttribArray(0); //Enable the pos attribute
         GL30.glEnableVertexAttribArray(1); //Enable the textureCoord attribute
         GL30.glEnableVertexAttribArray(2); //Enable the normals attribute
-        GL30.glEnableVertexAttribArray(3); //Enable the materials attribute
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, mesh.ibo); //Bind the indices used to connect vertices
         shader.bind(); //Bind the shader to the gpu
     }
 
     public void unbindMesh() {
         shader.unbind();
-        GL30.glDisableVertexAttribArray(3);
         GL30.glDisableVertexAttribArray(2);
         GL30.glDisableVertexAttribArray(1);
         GL30.glDisableVertexAttribArray(0);
@@ -60,21 +59,12 @@ public class GameObjectRenderer implements IGameObjectRenderer {
 
     public void prepareInstance(GameObject object, Light light) {
         //GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-        shader.setUniform("model", object.transformMatrix());
         shader.setUniform("view", main.camera.viewMatrix);
         shader.setUniform("project", window.getProjectionMatrix());
-        shader.setUniform("lightPos", light.pos);
-        shader.setUniform("lightCol", light.color);
         shader.setUniform("skyColor", window.background);
-        shader.setUniform("materials", main.meshes.get(object.meshID).materials);
+        shader.setUniform("blockID", 50);
         GL30.glBindTexture(GL30.GL_TEXTURE_2D, main.resourceManager.atlasID);
-
-        //for (int i = 0; i < main.meshes.get(object.meshID).textures(); i++) {
-        //    GL30.glActiveTexture(GL30.GL_TEXTURE0 + i);
-        //    GL30.glBindTexture(GL30.GL_TEXTURE_2D, main.meshes.get(object.meshID).textureIDs()[i]);
-        //    GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-        //    shader.setUniform("textureSampler[" + i + "]", i);
-        //}
+        GL43.glBindBufferBase(GL43.GL_SHADER_STORAGE_BUFFER, 0, main.resourceManager.coordSSBO);
     }
 
     public Shader getShader() {

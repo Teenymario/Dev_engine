@@ -6,23 +6,24 @@ layout(location = 2) in vec3 normal;
 layout(location = 3) in float material;
 
 out vec2 passTextureCoord;
-out vec3 surfaceNorm;
-out vec3 toLighVec;
-out vec3 toCamVec;
 out float visibility;
-out float fmaterialID;
 
-uniform mat4 model;
 uniform mat4 view;
 uniform mat4 project;
-uniform vec3 lightPos;
+uniform int blockID;
+
+layout(binding = 0, std430) buffer TextureCoords {
+    float texCoords[];
+};
 
 const float density = 0.07;
 const float gradient = 1.5;
 
 void main() {
-    vec4 worldPos = model * vec4(pos, 1.0);
-    vec4 posRelativeToCam = view * worldPos;
+    vec4 posRelativeToCam = view * vec4(pos, 1.0);
     gl_Position = project * posRelativeToCam;
-    passTextureCoord = textureCoord;
+    passTextureCoord = vec2(texCoords[blockID], texCoords[blockID + 1]);
+
+    float distance = length(posRelativeToCam.xyz);
+    visibility = exp(-pow((distance * density), gradient));
 }
