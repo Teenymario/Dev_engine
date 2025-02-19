@@ -5,6 +5,7 @@ import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -13,7 +14,8 @@ import static main.main.concat;
 
 public class ResourceManager {
     private static final ResourceManager singleton = new ResourceManager();
-    public final HashMap<String, Texture> textures = new LinkedHashMap<>();
+    public final ArrayList<String> registries = new ArrayList<>();
+    public final ArrayList<Texture> textures = new ArrayList<>();
     public TextureAtlas atlas;
     public int atlasID;
     public int coordSSBO;
@@ -21,10 +23,11 @@ public class ResourceManager {
     private ResourceManager() {}
 
     public void register(String path, String registryClass, String registry) {
-        registry = concat(registryClass + ":" + registry);
+        registry = concat(registryClass + ":" + registry);  //Registryclass will have to eventually be derived to a mod specific indicator like forge
 
-        if(!textures.containsKey(registry)) {
-            textures.put(registry, new Texture(path));
+        if(!registries.contains(registry)) {
+            textures.add(new Texture(path));
+            registries.add(registry);
 
             System.out.println(concat("Registered texture ", registry));
         } else {
@@ -33,7 +36,7 @@ public class ResourceManager {
     }
 
     public void registerAtlas() {
-        atlas = new TextureAtlas(textures.values().toArray(new Texture[0]));
+        atlas = new TextureAtlas(textures);
 
         //Upload atlas texture
         atlasID = GL11.glGenTextures();
@@ -57,7 +60,7 @@ public class ResourceManager {
     }
 
     public Texture getTexture(String registry) {
-        return textures.get(registry);
+        return textures.get(registries.indexOf(registry));
     }
 
     public static ResourceManager getInstance() {

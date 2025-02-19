@@ -66,7 +66,7 @@ public class GameObjectRenderer implements IGameObjectRenderer {
         shader.setUniform("view", main.camera.viewMatrix);
         shader.setUniform("project", window.getProjectionMatrix());
         shader.setUniform("skyColor", window.background);
-        shader.setUniform("blockID", 0);
+        shader.setUniform("blockID", 162);
     }
 
     public Shader getShader() {

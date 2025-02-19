@@ -22,7 +22,7 @@ public class TextureAtlas {
      * Returns a texture atlas object that stores a bytebuffer of a single large image created from a collection of other images provided to it using a packing algorithm.
      * @param textures A list of unsorted textures (do not sort your textures by size the constructor will)
      */
-    public TextureAtlas(Texture[] textures) {
+    public TextureAtlas(ArrayList<Texture> textures) {
         HashMap<Integer, ArrayList<Texture>> sortedTextures = new HashMap<>();       //Arraylist of texture arrays for all textures of specific sizes, starting with largest and ending with smallest
         ArrayList<Integer> sizes = new ArrayList<>();
 
@@ -38,7 +38,7 @@ public class TextureAtlas {
 
         sizes.sort(Collections.reverseOrder());
         Deque<Vector2i> ladder = new ArrayDeque<>();
-        coordData = BufferUtils.createFloatBuffer(textures.length * 4);
+        coordData = BufferUtils.createFloatBuffer(textures.size() * 4);
 
         //Calculate total area of texture atlas
         for(int size : sizes) {

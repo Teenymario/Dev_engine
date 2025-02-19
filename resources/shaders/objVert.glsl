@@ -22,7 +22,7 @@ const float gradient = 1.5;
 void main() {
     vec4 posRelativeToCam = view * vec4(pos, 1.0);
     gl_Position = project * posRelativeToCam;
-    passTextureCoord = texCoords[int(floor(gl_Position.y)) + 4];
+    passTextureCoord = texCoords[blockID];
 
     float distance = length(posRelativeToCam.xyz);
     visibility = exp(-pow((distance * density), gradient));
