@@ -5,6 +5,7 @@ import engine.IO.Window;
 import engine.content.BlockManager;
 import engine.content.blocks.*;
 import engine.graphics.*;
+import engine.graphics.renderers.BlockRenderer;
 import engine.graphics.renderers.GUIRenderer;
 import engine.graphics.renderers.GameObjectRenderer;
 import engine.graphics.renderers.TerrainRenderer;
@@ -27,13 +28,13 @@ public class main implements Runnable {
     //Core values
     public Thread game;
     public Window window;
-    public Shader objShader;
+    public Shader blockShader;
     public Shader terrainShader;
     public Shader guiShader;
-    public GameObjectRenderer objRenderer;
+    public BlockRenderer blockRenderer;
     public TerrainRenderer terrainRenderer;
     public GUIRenderer guiRenderer;
-    public MasterRenderer<GameObjectRenderer, TerrainRenderer, GUIRenderer> masterRenderer;
+    public MasterRenderer<BlockRenderer, TerrainRenderer, GUIRenderer> masterRenderer;
     public static List<GameObject> objectMasterList = new ArrayList<>();
     public static List<Mesh> meshes = new ArrayList<>();
     public static List<GUITexture> guis = new ArrayList<>();
@@ -157,9 +158,9 @@ public class main implements Runnable {
         window.setBackgroundColor(0.2f, 0.2f, 0.2f);
         window.create();
 
-        objShader = new Shader("/shaders/objVert.glsl", "/shaders/objFrag.glsl");
-        objShader.create();
-        objRenderer = new GameObjectRenderer(objShader);
+        blockShader = new Shader("/shaders/blockVert.glsl", "/shaders/blockFrag.glsl");
+        blockShader.create();
+        blockRenderer = new BlockRenderer(blockShader);
 
         terrainShader = new Shader("/shaders/terrainVert.glsl", "/shaders/terrainFrag.glsl");
         terrainShader.create();
@@ -169,21 +170,20 @@ public class main implements Runnable {
         guiShader.create();
         guiRenderer = new GUIRenderer(guiShader);
 
-        masterRenderer = new MasterRenderer<>(objRenderer, terrainRenderer, guiRenderer);
+        masterRenderer = new MasterRenderer<>(blockRenderer, terrainRenderer, guiRenderer);
 
         //Meshes
         //ObjectMesh.construct("resources/models/Grass_Block.obj").constructMesh();
         //ObjectMesh.construct("resources/models/Dirt_Block.obj").constructMesh();
         //ObjectMesh.construct("resources/models/Stone_Block.obj").constructMesh();
-        ObjectMesh.construct("resources/models/light.obj").constructMesh();
+        //ObjectMesh.construct("resources/models/light.obj").constructMesh();
 
         //Meshes
 
         //GameObjects
         //object = new GameObject(0, new Vector3f(0, 0.5f, -5), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
         light = new Light(new Vector3f(0, 1, 1), new Vector3f(1, 1, 1));
-        lightCube = new GameObject(0, light.pos, new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-        masterRenderer.processObject(lightCube);
+        //lightCube = new GameObject(0, light.pos, new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 
         //terrains.add(new Terrain(0, 0, "/textures/grass_top.png"));
         //terrains.add(new Terrain(1, 0, "/textures/grass_top.png"));
@@ -230,6 +230,9 @@ public class main implements Runnable {
 
         //Create world
         world = new Dimension("earth");
+        dirt block = new dirt();
+        block.setPos(0, -1, 0);
+        masterRenderer.blocks.add(block);
         //Create world
 
         //Guis
@@ -331,7 +334,7 @@ public class main implements Runnable {
         for(Mesh mesh : meshes) {
             mesh.destroy();
         }
-        objShader.destroy();
+        blockShader.destroy();
         terrainShader.destroy();
         guiShader.destroy();
         masterRenderer.destroy();

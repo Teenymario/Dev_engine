@@ -101,25 +101,18 @@ public class Shader {
         GL20.glUniform4f(getUniformLoc(name), val.x, val.y, val.z, val.w);
     }
 
-    /*
-    Definitions of material in float[] form
-    0 = texture ID
-    1 = transparency
-    2 = specExp
-    3 = opticalDensity
-    4, 5, 6 = ambient
-    7, 8, 9 = diffuse
-    10, 11, 12 = specular
-    13, 14, 15 = emmisive
-    */
-    public void setUniform(String name, float[] val) {
-        GL20.glUniform1fv(getUniformLoc(name), val);
-    }
-
     public void setUniform(String name, Matrix4f val) {
         FloatBuffer buffer = MemoryUtil.memAllocFloat(16).put(val.getAll());
         buffer.flip();
         GL20.glUniformMatrix4fv(getUniformLoc(name), true, buffer);
+    }
+
+    public void setUniform(String name, float[] val) {
+        GL20.glUniform1fv(getUniformLoc(name), val);
+    }
+
+    public void setUniform(String name, int[] val) {
+        GL20.glUniform1iv(getUniformLoc(name), val);
     }
     //Setting uniform values
 

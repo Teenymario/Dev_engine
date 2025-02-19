@@ -74,26 +74,27 @@ public class BlockManager {
                                     break;
                             }
                             break;
-                        case "top":
-                            model.setTopFace(resourceManager.getTexture(tokens[1]).textureID);
-                            break;
-                        case "bottom":
-                            model.setBottomFace(resourceManager.getTexture(tokens[1]).textureID);
-                            break;
+                            // + 1 is added because there seems to be an offset in the rendering pipeline on the atlas
                         case "north":
-                            model.setNorthFace(resourceManager.getTexture(tokens[1]).textureID);
+                            model.setNorthFace(resourceManager.getRegistryIndex(tokens[1]) + 1);
                             break;
                         case "south":
-                            model.setSouthFace(resourceManager.getTexture(tokens[1]).textureID);
+                            model.setSouthFace(resourceManager.getRegistryIndex(tokens[1]) + 1);
                             break;
                         case "west":
-                            model.setWestFace(resourceManager.getTexture(tokens[1]).textureID);
+                            model.setWestFace(resourceManager.getRegistryIndex(tokens[1]) + 1);
                             break;
                         case "east":
-                            model.setEastFace(resourceManager.getTexture(tokens[1]).textureID);
+                            model.setEastFace(resourceManager.getRegistryIndex(tokens[1]) + 1);
+                            break;
+                        case "top":
+                            model.setTopFace(resourceManager.getRegistryIndex(tokens[1]) + 1);
+                            break;
+                        case "bottom":
+                            model.setBottomFace(resourceManager.getRegistryIndex(tokens[1]) + 1);
                             break;
                         case "all":
-                            model.setFaces(resourceManager.getTexture(tokens[1]).textureID);
+                            model.setFaces(resourceManager.getRegistryIndex(tokens[1]) + 1);
                             break;
                         case "transparent":
                             model.setTransparent();

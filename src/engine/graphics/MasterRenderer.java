@@ -1,50 +1,35 @@
 package engine.graphics;
 
+import engine.content.BlockBase;
+import engine.graphics.renderers.IBlockRenderer;
 import engine.graphics.renderers.IGUIRendererBase;
-import engine.graphics.renderers.IGameObjectRenderer;
 import engine.graphics.renderers.ITerrainRenderer;
-import engine.objects.GameObject;
 import engine.objects.Light;
 import main.main;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
-public class MasterRenderer<obj extends IGameObjectRenderer, terrain extends ITerrainRenderer, gui extends IGUIRendererBase> {
+public class MasterRenderer<obj extends IBlockRenderer, terrain extends ITerrainRenderer, gui extends IGUIRendererBase> {
 
-    private obj objRenderer;
+    private obj blockRenderer;
     private terrain terrainRenderer;
     private gui guiRenderer;
-    private Map<Integer, List<GameObject>> objects = new HashMap<Integer, List<GameObject>>();
+    public final ArrayList<BlockBase> blocks = new ArrayList<>();
 
     public MasterRenderer(obj objRenderer, terrain terrainRenderer, gui guiRenderer) {
-        this.objRenderer = objRenderer;
+        this.blockRenderer = objRenderer;
         this.terrainRenderer = terrainRenderer;
         this.guiRenderer = guiRenderer;
     }
 
     public void render(Light light) {
-        objRenderer.render(objects, light);
+        blockRenderer.render(blocks);
         terrainRenderer.render(main.world.chunks, light);
         guiRenderer.render(main.guis);
     }
 
-    public void processObject(GameObject object) {
-        int mesh = object.meshID;
-        List<GameObject> batch = objects.get(mesh);
-        if(batch != null) {
-            batch.add(object);
-        } else {
-            List<GameObject> newBatch = new ArrayList<GameObject>();
-            newBatch.add(object);
-            objects.put(mesh, newBatch);
-        }
-    }
-
     public void destroy() {
-        objRenderer.getShader().destroy();
+        blockRenderer.getShader().destroy();
         terrainRenderer.getShader().destroy();
         guiRenderer.getShader().destroy();
     }

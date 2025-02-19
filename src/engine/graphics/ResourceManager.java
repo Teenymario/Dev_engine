@@ -6,9 +6,6 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL43;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 
 import static main.main.concat;
 
@@ -61,6 +58,10 @@ public class ResourceManager {
 
     public Texture getTexture(String registry) {
         return textures.get(registries.indexOf(registry));
+    }
+
+    public int getRegistryIndex(String registry) {
+        return registries.indexOf(registry);
     }
 
     public static ResourceManager getInstance() {

@@ -29,7 +29,7 @@ public class Mesh {
         this.height = height;
     }
 
-    public int constructMesh() {
+    public void createMeshData() {
 
         vao = GL30.glGenVertexArrays();
         GL30.glBindVertexArray(vao);
@@ -88,7 +88,10 @@ public class Mesh {
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ibo);
         GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indBuffer, GL15.GL_STATIC_DRAW);
         GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+    }
 
+    public int constructMesh() {
+        createMeshData();
         main.meshes.add(this);
         return main.meshes.size() - 1;
     }

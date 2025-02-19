@@ -69,10 +69,10 @@ public class TextureAtlas {
                 Ok now the issue here is that we want to load up the texture values up to here, but the only issue that we have is that well,
                 we kinda need to align these to the ID's of the blocks.
                  */
-                coordData.put(pen.x);
-                coordData.put(pen.y);
-                coordData.put(pen.x + texSize);
-                coordData.put(pen.y + texSize);
+                coordData.put((pen.x) / (float) size);
+                coordData.put((pen.y) / (float) size);
+                coordData.put((pen.x + texSize) / (float) size);
+                coordData.put((pen.y + texSize) / (float) size);
 
                 pen.x += texSize;
 
@@ -96,6 +96,7 @@ public class TextureAtlas {
         }
         imgData.position(0);
         coordData.position(0);
+
 
 
         BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);

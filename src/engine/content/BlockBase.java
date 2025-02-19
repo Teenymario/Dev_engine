@@ -5,7 +5,7 @@ import engine.graphics.models.BlockModel;
 import static engine.maths.Vector3.Vector3i;
 
 public abstract class BlockBase implements IBlockBase {
-    private Vector3i pos;
+    private Vector3i pos = new Vector3i(0, 0, 0);
 
     public BlockBase() {}
 
