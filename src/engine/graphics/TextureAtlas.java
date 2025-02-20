@@ -1,13 +1,10 @@
 package engine.graphics;
 
-import org.lwjgl.BufferUtils;
-
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.FloatBuffer;
 import java.util.*;
 
 import static engine.maths.Vector2.Vector2i;
@@ -16,7 +13,7 @@ import static engine.maths.Vector2.Vector2i;
 public class TextureAtlas {
     public int size;
     public ByteBuffer imgData;
-    public FloatBuffer coordData;   //4 floats for a single image
+    public float[] coordData;   //4 floats for a single image
 
     /**
      * Returns a texture atlas object that stores a bytebuffer of a single large image created from a collection of other images provided to it using a packing algorithm.
@@ -38,7 +35,8 @@ public class TextureAtlas {
 
         sizes.sort(Collections.reverseOrder());
         Deque<Vector2i> ladder = new ArrayDeque<>();
-        coordData = BufferUtils.createFloatBuffer(textures.size() * 4);
+        coordData = new float[textures.size() * 4];
+        int counter = -1;
 
         //Calculate total area of texture atlas
         for(int size : sizes) {
@@ -69,10 +67,10 @@ public class TextureAtlas {
                 Ok now the issue here is that we want to load up the texture values up to here, but the only issue that we have is that well,
                 we kinda need to align these to the ID's of the blocks.
                  */
-                coordData.put((pen.x) / (float) size);
-                coordData.put((pen.y) / (float) size);
-                coordData.put((pen.x + texSize) / (float) size);
-                coordData.put((pen.y + texSize) / (float) size);
+                coordData[++counter] = (pen.x) / (float) size;
+                coordData[++counter] = (pen.y) / (float) size;
+                coordData[++counter] = (pen.x + texSize) / (float) size;
+                coordData[++counter] = (pen.y + texSize) / (float) size;
 
                 pen.x += texSize;
 
@@ -95,9 +93,6 @@ public class TextureAtlas {
             }
         }
         imgData.position(0);
-        coordData.position(0);
-
-
 
         BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
         for (int y = 0; y < size; y++) {

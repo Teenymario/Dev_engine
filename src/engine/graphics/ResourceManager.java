@@ -1,9 +1,7 @@
 package engine.graphics;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.opengl.GL43;
 
 import java.util.ArrayList;
 
@@ -15,7 +13,6 @@ public class ResourceManager {
     public final ArrayList<Texture> textures = new ArrayList<>();
     public TextureAtlas atlas;
     public int atlasID;
-    public int coordSSBO;
 
     private ResourceManager() {}
 
@@ -45,13 +42,6 @@ public class ResourceManager {
         GL30.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
         GL30.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
         GL30.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-
-        //Upload texture coords
-        coordSSBO = GL30.glGenBuffers();
-        GL30.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, coordSSBO);  // Bind SSBO
-        GL30.glBufferData(GL43.GL_SHADER_STORAGE_BUFFER, atlas.coordData, GL15.GL_STATIC_DRAW);
-        GL30.glBindBufferBase(GL43.GL_SHADER_STORAGE_BUFFER, 0, coordSSBO);
-        GL30.glBindBuffer(GL43.GL_SHADER_STORAGE_BUFFER, 0);// Unbind
 
         //textures.clear();     Uncomment once shaders are updated to handle an atlas
     }

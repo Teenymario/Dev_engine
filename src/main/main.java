@@ -176,7 +176,7 @@ public class main implements Runnable {
         //ObjectMesh.construct("resources/models/Grass_Block.obj").constructMesh();
         //ObjectMesh.construct("resources/models/Dirt_Block.obj").constructMesh();
         //ObjectMesh.construct("resources/models/Stone_Block.obj").constructMesh();
-        //ObjectMesh.construct("resources/models/light.obj").constructMesh();
+        ObjectMesh.construct("resources/models/light.obj").constructMesh();
 
         //Meshes
 

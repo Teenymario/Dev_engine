@@ -6,6 +6,7 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import static main.main.concat;
 import static main.main.resourceManager;
@@ -46,6 +47,7 @@ public class BlockManager {
         int index = 0;
         String line;
         String[] tokens;
+        int[] faces = new int[6];
 
         for(String registry : registries) {
             BlockModel model = new BlockModel();
@@ -76,25 +78,25 @@ public class BlockManager {
                             break;
                             // + 1 is added because there seems to be an offset in the rendering pipeline on the atlas
                         case "north":
-                            model.setNorthFace(resourceManager.getRegistryIndex(tokens[1]) + 1);
+                            faces[0] = resourceManager.getRegistryIndex(tokens[1]) + 1;
                             break;
                         case "south":
-                            model.setSouthFace(resourceManager.getRegistryIndex(tokens[1]) + 1);
+                            faces[1] = resourceManager.getRegistryIndex(tokens[1]) + 1;
                             break;
                         case "west":
-                            model.setWestFace(resourceManager.getRegistryIndex(tokens[1]) + 1);
+                            faces[2] = resourceManager.getRegistryIndex(tokens[1]) + 1;
                             break;
                         case "east":
-                            model.setEastFace(resourceManager.getRegistryIndex(tokens[1]) + 1);
+                            faces[3] = resourceManager.getRegistryIndex(tokens[1]) + 1;
                             break;
                         case "top":
-                            model.setTopFace(resourceManager.getRegistryIndex(tokens[1]) + 1);
+                            faces[4] = resourceManager.getRegistryIndex(tokens[1]) + 1;
                             break;
                         case "bottom":
-                            model.setBottomFace(resourceManager.getRegistryIndex(tokens[1]) + 1);
+                            faces[5] = resourceManager.getRegistryIndex(tokens[1]) + 1;
                             break;
                         case "all":
-                            model.setFaces(resourceManager.getRegistryIndex(tokens[1]) + 1);
+                            Arrays.fill(faces, resourceManager.getRegistryIndex(tokens[1]) + 1);
                             break;
                         case "transparent":
                             model.setTransparent();
@@ -105,6 +107,7 @@ public class BlockManager {
                 e.printStackTrace();
             }
 
+            model.setTextureCoords(faces);
             blocks.get(index).setModel(model);
             index++;
         }

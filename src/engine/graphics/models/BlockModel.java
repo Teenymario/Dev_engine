@@ -1,10 +1,16 @@
 package engine.graphics.models;
 
-import java.util.Arrays;
+import org.lwjgl.system.MemoryUtil;
+
+import java.nio.FloatBuffer;
+
+import static engine.maths.Vector3.Vector3f;
+
+import static main.main.resourceManager;
 
 public class BlockModel {
     public boolean transparent = false;
-    public int[] faces = new int[6];
+    public BlockMesh mesh;
     public ModelType type;
 
     /* Face order goes as follows:
@@ -19,41 +25,104 @@ public class BlockModel {
         this.transparent = true;
     }
 
-    public void setNorthFace(int face) {
-        faces[0] = face;
-    }
+    //Will be short lived
+    public void setTextureCoords(int[] faces) {
+        FloatBuffer texCoords = MemoryUtil.memAllocFloat(72);
 
-    public void setSouthFace(int face) {
-        faces[1] = face;
-    }
+        //North
+        //resourceManager.atlas.coordData[faces[0] * 4]
+        //resourceManager.atlas.coordData[faces[0] * 4 + 1]
+        //resourceManager.atlas.coordData[faces[0] * 4 + 2]
+        //resourceManager.atlas.coordData[faces[0] * 4 + 3]
 
-    public void setWestFace(int face) {
-        faces[2] = face;
-    }
+        texCoords.put(resourceManager.atlas.coordData[faces[0] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[0] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[0] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[0] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[0] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[0] * 4 + 1]);
+        texCoords.put(resourceManager.atlas.coordData[faces[0] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[0] * 4 + 1]);
+        texCoords.put(resourceManager.atlas.coordData[faces[0] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[0] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[0] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[0] * 4 + 1]);
 
-    public void setEastFace(int face) {
-        faces[3] = face;
-    }
+        //South
+        texCoords.put(resourceManager.atlas.coordData[faces[1] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[1] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[1] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[1] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[1] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[1] * 4 + 1]);
+        texCoords.put(resourceManager.atlas.coordData[faces[1] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[1] * 4 + 1]);
+        texCoords.put(resourceManager.atlas.coordData[faces[1] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[1] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[1] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[1] * 4 + 1]);
 
-    public void setTopFace(int face) {
-        faces[4] = face;
-    }
+        //West
+        texCoords.put(resourceManager.atlas.coordData[faces[2] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[2] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[2] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[2] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[2] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[2] * 4 + 1]);
+        texCoords.put(resourceManager.atlas.coordData[faces[2] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[2] * 4 + 1]);
+        texCoords.put(resourceManager.atlas.coordData[faces[2] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[2] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[2] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[2] * 4 + 1]);
 
-    public void setBottomFace(int face) {
-        faces[5] = face;
-    }
+        //East
+        texCoords.put(resourceManager.atlas.coordData[faces[3] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[3] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[3] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[3] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[3] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[3] * 4 + 1]);
+        texCoords.put(resourceManager.atlas.coordData[faces[3] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[3] * 4 + 1]);
+        texCoords.put(resourceManager.atlas.coordData[faces[3] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[3] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[3] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[3] * 4 + 1]);
 
-    public void setFaces(int north, int south, int west, int east, int top, int bottom) {
-        faces[0] = north;
-        faces[1] = south;
-        faces[2] = west;
-        faces[3] = east;
-        faces[4] = top;
-        faces[5] = bottom;
-    }
+        //Top
+        texCoords.put(resourceManager.atlas.coordData[faces[4] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[4] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[4] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[4] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[4] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[4] * 4 + 1]);
+        texCoords.put(resourceManager.atlas.coordData[faces[4] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[4] * 4 + 1]);
+        texCoords.put(resourceManager.atlas.coordData[faces[4] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[4] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[4] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[4] * 4 + 1]);
 
-    public void setFaces(int face) {
-        Arrays.fill(faces, face);
+        //Bottom
+        texCoords.put(resourceManager.atlas.coordData[faces[5] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[5] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[5] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[5] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[5] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[5] * 4 + 1]);
+        texCoords.put(resourceManager.atlas.coordData[faces[5] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[5] * 4 + 1]);
+        texCoords.put(resourceManager.atlas.coordData[faces[5] * 4 + 2]);
+        texCoords.put(resourceManager.atlas.coordData[faces[5] * 4 + 3]);
+        texCoords.put(resourceManager.atlas.coordData[faces[5] * 4]);
+        texCoords.put(resourceManager.atlas.coordData[faces[5] * 4 + 1]);
+
+        //Hardcode block model
+        texCoords.position(0);
+        mesh = new BlockMesh(new Vector3f[] {
+                new Vector3f(-0.5f, 1.0f, -0.5f), new Vector3f(0.5f, 1.0f, 0.5f), new Vector3f(0.5f, 1.0f, -0.5f), new Vector3f(-0.5f, 1.0f, -0.5f), new Vector3f(-0.5f, 1.0f, 0.5f), new Vector3f(0.5f, 1.0f, 0.5f), new Vector3f(0.5f, -0.0f, -0.5f), new Vector3f(0.5f, 0.0f, 0.5f), new Vector3f(-0.5f, -0.0f, -0.5f), new Vector3f(0.5f, 0.0f, 0.5f), new Vector3f(-0.5f, 0.0f, 0.5f), new Vector3f(-0.5f, -0.0f, -0.5f), new Vector3f(0.5f, 1.0f, -0.5f), new Vector3f(0.5f, 0.0f, 0.5f), new Vector3f(0.5f, -0.0f, -0.5f), new Vector3f(0.5f, 1.0f, -0.5f), new Vector3f(0.5f, 1.0f, 0.5f), new Vector3f(0.5f, 0.0f, 0.5f), new Vector3f(-0.5f, -0.0f, -0.5f), new Vector3f(-0.5f, 1.0f, 0.5f), new Vector3f(-0.5f, 1.0f, -0.5f), new Vector3f(-0.5f, -0.0f, -0.5f), new Vector3f(-0.5f, 0.0f, 0.5f), new Vector3f(-0.5f, 1.0f, 0.5f), new Vector3f(-0.5f, 1.0f, 0.5f), new Vector3f(0.5f, 0.0f, 0.5f), new Vector3f(0.5f, 1.0f, 0.5f), new Vector3f(-0.5f, 1.0f, 0.5f), new Vector3f(-0.5f, 0.0f, 0.5f), new Vector3f(0.5f, 0.0f, 0.5f), new Vector3f(-0.5f, 1.0f, -0.5f), new Vector3f(0.5f, -0.0f, -0.5f), new Vector3f(-0.5f, -0.0f, -0.5f), new Vector3f(0.5f, 1.0f, -0.5f), new Vector3f(-0.5f, 1.0f, -0.5f), new Vector3f(0.5f, -0.0f, -0.5f),
+        }, texCoords);
     }
 
     public void setType(ModelType type) {
