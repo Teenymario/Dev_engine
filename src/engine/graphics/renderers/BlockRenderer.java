@@ -25,6 +25,7 @@ public class BlockRenderer implements IBlockRenderer {
         for(BlockBase block : blocks) {
             bindMesh(block.getModel());
             //GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+            shader.setUniform("worldPos", block.getPos());
             shader.setUniform("view", main.camera.viewMatrix);
             shader.setUniform("project", window.getProjectionMatrix());
             shader.setUniform("skyColor", window.background);

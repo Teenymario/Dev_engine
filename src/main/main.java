@@ -154,9 +154,10 @@ public class main implements Runnable {
     //Setup core game engine
     private void instantiate() {
         System.out.println("- Instantiate");
-        window = new Window(WIDTH, HEIGHT, "game");
-        window.setBackgroundColor(0.2f, 0.2f, 0.2f);
+        window = new Window(WIDTH, HEIGHT, "Dev engine");
+        window.setBackgroundColor(0.474509804f, 0.650980392f, 1f);  //Imitate minecraft's sky color
         window.create();
+        window.setIcon("resources/icon.png");
 
         blockShader = new Shader("/shaders/blockVert.glsl", "/shaders/blockFrag.glsl");
         blockShader.create();
@@ -176,7 +177,7 @@ public class main implements Runnable {
         //ObjectMesh.construct("resources/models/Grass_Block.obj").constructMesh();
         //ObjectMesh.construct("resources/models/Dirt_Block.obj").constructMesh();
         //ObjectMesh.construct("resources/models/Stone_Block.obj").constructMesh();
-        ObjectMesh.construct("resources/models/light.obj").constructMesh();
+        //ObjectMesh.construct("resources/models/light.obj").constructMesh();
 
         //Meshes
 
@@ -231,15 +232,13 @@ public class main implements Runnable {
         //Create world
         world = new Dimension("earth");
         dirt block = new dirt();
-        block.setPos(0, -1, 0);
+        block.setPos(0, -1, -2);
         masterRenderer.blocks.add(block);
         //Create world
 
         //Guis
         //guis.add(new GUITexture(0, new Vector2f(0f, 0f), new Vector2f(0.02f, 0.02f), "/textures/gui/cursor.png"));
         //Guis
-
-        objectMasterList.add(lightCube);
     }
 
     //Finalise

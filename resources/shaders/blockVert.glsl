@@ -6,6 +6,7 @@ layout(location = 1) in vec2 tex;
 out vec2 passTextureCoord;
 out float visibility;
 
+uniform ivec3 worldPos;
 uniform mat4 view;
 uniform mat4 project;
 
@@ -13,7 +14,7 @@ const float density = 0.07;
 const float gradient = 1.5;
 
 void main() {
-    vec4 posRelativeToCam = view * vec4(pos, 1.0);
+    vec4 posRelativeToCam = view * vec4(pos + worldPos, 1.0);
     gl_Position = project * posRelativeToCam;
 
     passTextureCoord = tex;

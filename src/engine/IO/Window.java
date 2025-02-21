@@ -1,12 +1,20 @@
 package engine.IO;
 
+import engine.graphics.Image;
 import engine.maths.Matrix4f;
 import main.main;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.stb.STBImage;
+import org.lwjgl.system.MemoryStack;
+import org.newdawn.slick.opengl.TextureLoader;
+
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 
 import static engine.maths.Vector3.Vector3f;
 
@@ -158,8 +166,16 @@ public class Window {
     }
 
     public void setBackgroundColor(float r, float g, float b) {
-        background.x = r;
-        background.y = g;
-        background.z = b;
+        background.redefine(r, g, b);
+    }
+
+    public void setIcon(String path) {
+        GLFWImage icon = GLFWImage.malloc();
+        GLFWImage.Buffer iconBuffer = GLFWImage.malloc(1);
+        Image img = new Image(path);
+        icon.set(img.width, img.height, img.imgData);
+        iconBuffer.put(0, icon);
+
+        GLFW.glfwSetWindowIcon(window, iconBuffer);
     }
 }
