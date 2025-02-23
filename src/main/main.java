@@ -5,9 +5,8 @@ import engine.IO.Window;
 import engine.content.BlockManager;
 import engine.content.blocks.*;
 import engine.graphics.*;
-import engine.graphics.renderers.BlockRenderer;
+import engine.graphics.renderers.ChunkRenderer;
 import engine.graphics.renderers.GUIRenderer;
-import engine.graphics.renderers.GameObjectRenderer;
 import engine.graphics.renderers.TerrainRenderer;
 import engine.objects.Camera;
 import engine.objects.GUITexture;
@@ -16,6 +15,7 @@ import engine.objects.Light;
 import engine.utils.FileCallback;
 import engine.utils.FileUtils;
 import engine.world.dimension.Dimension;
+import engine.world.terrain.Chunk;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
@@ -31,10 +31,10 @@ public class main implements Runnable {
     public Shader blockShader;
     public Shader terrainShader;
     public Shader guiShader;
-    public BlockRenderer blockRenderer;
+    public ChunkRenderer chunkRenderer;
     public TerrainRenderer terrainRenderer;
     public GUIRenderer guiRenderer;
-    public MasterRenderer<BlockRenderer, TerrainRenderer, GUIRenderer> masterRenderer;
+    public MasterRenderer<ChunkRenderer, TerrainRenderer, GUIRenderer> masterRenderer;
     public static List<GameObject> objectMasterList = new ArrayList<>();
     public static List<Mesh> meshes = new ArrayList<>();
     public static List<GUITexture> guis = new ArrayList<>();
@@ -68,6 +68,7 @@ public class main implements Runnable {
     public static BlockManager blockManager;
     //public static ArrayList<ItemBase> contentItems = new ArrayList<>();
     public static Dimension world;
+    public static ArrayList<Chunk> chunks;
 
     //Simulation
     public static int tickRate = 20;     //Per second
@@ -135,6 +136,7 @@ public class main implements Runnable {
                 delta--;
             }
 
+            System.out.println(camera.pos.print());
             render();
             frames++;
 
@@ -159,9 +161,9 @@ public class main implements Runnable {
         window.create();
         window.setIcon("resources/icon.png");
 
-        blockShader = new Shader("/shaders/blockVert.glsl", "/shaders/blockFrag.glsl");
+        blockShader = new Shader("/shaders/chunkVert.glsl", "/shaders/chunkFrag.glsl");
         blockShader.create();
-        blockRenderer = new BlockRenderer(blockShader);
+        chunkRenderer = new ChunkRenderer(blockShader);
 
         terrainShader = new Shader("/shaders/terrainVert.glsl", "/shaders/terrainFrag.glsl");
         terrainShader.create();
@@ -171,7 +173,7 @@ public class main implements Runnable {
         guiShader.create();
         guiRenderer = new GUIRenderer(guiShader);
 
-        masterRenderer = new MasterRenderer<>(blockRenderer, terrainRenderer, guiRenderer);
+        masterRenderer = new MasterRenderer<>(chunkRenderer, terrainRenderer, guiRenderer);
 
         //Meshes
         //ObjectMesh.construct("resources/models/Grass_Block.obj").constructMesh();
@@ -231,9 +233,9 @@ public class main implements Runnable {
 
         //Create world
         world = new Dimension("earth");
-        dirt block = new dirt();
-        block.setPos(0, -1, -2);
-        masterRenderer.blocks.add(block);
+        chunks = new ArrayList<>();
+        chunks.add(new Chunk(0, 0, 0));
+
         //Create world
 
         //Guis

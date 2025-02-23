@@ -1,11 +1,15 @@
 package engine.world.terrain;
 
+import engine.graphics.ChunkMesher;
+import engine.graphics.models.ChunkMesh;
+
 import static engine.maths.Vector3.Vector3i;
 
 public class Chunk {
-    public static final int SIZE = 8;
+    public static final int SIZE = 16;
     public Short[] blocks = new Short[SIZE * SIZE * SIZE];
     public Vector3i pos;
+    public ChunkMesh mesh;
 
     /* Position utils
      *  x = i & MASK
@@ -30,6 +34,13 @@ public class Chunk {
                 blocks[i] = 0;
             }
         }
+
+        mesh = ChunkMesher.meshSingleChunk(this);
+    }
+
+    public Chunk remesh() {
+        mesh = ChunkMesher.meshSingleChunk(this);
+        return this;
     }
 
     public short getBlock(int x, int y, int z) {

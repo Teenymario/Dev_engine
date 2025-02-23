@@ -1,15 +1,15 @@
 package engine.graphics.renderers;
 
-import engine.content.BlockBase;
 import engine.graphics.Shader;
-import engine.graphics.models.BlockModel;
+import engine.graphics.models.ChunkMesh;
+import engine.world.terrain.Chunk;
 import org.lwjgl.opengl.GL11;
 
 import java.util.ArrayList;
 
-public interface IBlockRenderer {
+public interface IChunkRenderer {
 
-    void bindMesh(BlockModel model);
+    void bindMesh(ChunkMesh model);
 
     void unbindMesh();
 
@@ -26,6 +26,6 @@ public interface IBlockRenderer {
         GL11.glDisable(GL11.GL_CULL_FACE);
     }
 
-    void render(ArrayList<BlockBase> block);
+    void render(ArrayList<Chunk> block);
 
 }

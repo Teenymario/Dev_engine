@@ -26,6 +26,5 @@ Definitions of material in float[] form
 */
 
 void main() {
-    //outColor = texture(textureAtlas, passTextureCoord);
     outColor = mix(vec4(skyColor, 1.0), texture(textureAtlas, passTextureCoord), visibility);
 }
