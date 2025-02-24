@@ -3,6 +3,8 @@ package engine.world.terrain;
 import engine.graphics.ChunkMesher;
 import engine.graphics.models.ChunkMesh;
 
+import java.util.Arrays;
+
 import static engine.maths.Vector3.Vector3i;
 
 public class Chunk {
@@ -22,18 +24,7 @@ public class Chunk {
     public Chunk(int x, int y, int z) {
         pos = new Vector3i(x, y, z);
 
-        for(int i = 0; i < blocks.length; i++) {
-            y = (i >> bitsPerCoord) & MASK;
-            if(y == SIZE - 1) {
-                blocks[i] = 1;
-            } else if(y >= SIZE - 3) {
-                blocks[i] = 2;
-            } else if(y < SIZE - 4) {
-                blocks[i] = 3;
-            } else {
-                blocks[i] = 0;
-            }
-        }
+        Arrays.fill(blocks, (short) 1);
 
         mesh = ChunkMesher.meshSingleChunk(this);
     }

@@ -42,15 +42,23 @@ public class BlockManager {
         return registries.get(ID - 1);
     }
 
+    public BlockBase getBlockByReg(String registry) {
+        return blocks.get(registries.indexOf(registry));
+    }
+
+    public BlockBase getBlockByID(short ID) {
+        return blocks.get(ID - 1);
+    }
+
     //Run after all blocks are registered
     public void registerBlockModels() {
         int index = 0;
         String line;
         String[] tokens;
-        int[] faces = new int[6];
 
         for(String registry : registries) {
             BlockModel model = new BlockModel();
+            int[] faces = new int[6];
 
             try(BufferedReader reader = new BufferedReader(new FileReader(concat("resources/models/blocks/", registry.split(":")[1], ".model")))) {
                 while((line = reader.readLine()) != null) {
@@ -75,7 +83,6 @@ public class BlockManager {
                                     model.setType(ModelType.CUSTOM);
                                     break;
                             }
-                            break;
                             // + 1 is added because there seems to be an offset in the rendering pipeline on the atlas
                         case "north":
                             faces[0] = resourceManager.getRegistryIndex(tokens[1]) + 1;
