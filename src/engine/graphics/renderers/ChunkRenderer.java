@@ -24,12 +24,13 @@ public class ChunkRenderer implements IChunkRenderer {
     public void render(ArrayList<Chunk> blocks) {
         for(Chunk chunk : blocks) {
             bindMesh(chunk.mesh);
-            //GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
             shader.setUniform("worldPos", chunk.pos);
             shader.setUniform("view", main.camera.viewMatrix);
             shader.setUniform("project", window.getProjectionMatrix());
             shader.setUniform("skyColor", window.background);
+            //GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
             GL11.glDrawElements(GL11.GL_TRIANGLES, chunk.mesh.indCount, GL11.GL_UNSIGNED_INT, 0);
+            //GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
         }
         unbindMesh();
     }
@@ -50,7 +51,6 @@ public class ChunkRenderer implements IChunkRenderer {
         GL30.glDisableVertexAttribArray(1);
         GL30.glDisableVertexAttribArray(0);
         GL30.glBindVertexArray(0);
-        //GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
         enableCulling();
     }
 

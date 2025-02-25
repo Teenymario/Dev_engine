@@ -21,34 +21,40 @@ public class TextureAtlas {
      */
     public TextureAtlas(ArrayList<Texture> textures) {
         HashMap<Integer, ArrayList<Texture>> sortedTextures = new HashMap<>();       //Arraylist of texture arrays for all textures of specific sizes, starting with largest and ending with smallest
-        ArrayList<Integer> sizes = new ArrayList<>();
+        HashMap<Integer, ArrayList<Integer>> textureIDs = new HashMap<>();           //This is here because there seems to be a little issue with the IDs not being properly linked to coordData
 
+        ArrayList<Integer> sizes = new ArrayList<>();
+        int[] IDs = new int[textures.size()];
+
+        int counter = -1;
         for(Texture texture : textures) {
-            if(sortedTextures.containsKey(texture.width)) {
-                sortedTextures.get(texture.width).add(texture);
-            } else {
+            if (!sortedTextures.containsKey(texture.width)) {
                 sizes.add(texture.width);
-                sortedTextures.put(texture.width, new ArrayList<Texture>());
-                sortedTextures.get(texture.width).add(texture);
+                sortedTextures.put(texture.width, new ArrayList<>());
+                textureIDs.put(texture.width, new ArrayList<>());
             }
+            sortedTextures.get(texture.width).add(texture);
+            textureIDs.get(texture.width).add(++counter);
+
         }
 
         sizes.sort(Collections.reverseOrder());
         Deque<Vector2i> ladder = new ArrayDeque<>();
         coordData = new float[textures.size() * 4];
-        int counter = -1;
 
         //Calculate total area of texture atlas
         for(int size : sizes) {
             this.size += sortedTextures.get(size).size() * (size * size);
         }
-        System.out.println(nextPower(size));
+
         size = nextPower((int) Math.ceil(Math.sqrt(size)));
-        System.out.println(size);
         imgData = ByteBuffer.allocateDirect(4 * size * size);
 
         Vector2i pen = new Vector2i(0, 0);
+        int id;
+
         for(int texSize : sizes) {
+            counter = -1;
             for(Texture texture : sortedTextures.get(texSize)) {
 
                 //Read texture data into atlas buffer
@@ -66,10 +72,12 @@ public class TextureAtlas {
                 /*
                 Floats are put in for top left and bottom right, interchange them for other 2 positions
                  */
-                coordData[++counter] = (pen.x) / (float) size;
-                coordData[++counter] = (pen.y) / (float) size;
-                coordData[++counter] = (pen.x + texSize) / (float) size;
-                coordData[++counter] = (pen.y + texSize) / (float) size;
+                id = textureIDs.get(texSize).get(++counter);
+
+                coordData[id * 4] = (pen.x) / (float) size;
+                coordData[id * 4 + 1] = (pen.y) / (float) size;
+                coordData[id * 4 + 2] = (pen.x + texSize) / (float) size;
+                coordData[id * 4 + 3] = (pen.y + texSize) / (float) size;
 
                 pen.x += texSize;
 

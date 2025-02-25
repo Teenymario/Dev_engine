@@ -43,7 +43,7 @@ public class ResourceManager {
         GL30.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
         GL30.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
 
-        //textures.clear();     Uncomment once shaders are updated to handle an atlas
+        textures.clear();     //Uncomment once shaders are updated to handle an atlas
     }
 
     public Texture getTexture(String registry) {

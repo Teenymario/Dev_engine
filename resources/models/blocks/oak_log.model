@@ -1,0 +1,7 @@
+type full
+top devEngine:oak_log_top
+bottom devEngine:oak_log_top
+north devEngine:oak_log
+south devEngine:oak_log
+west devEngine:oak_log
+east devEngine:oak_log

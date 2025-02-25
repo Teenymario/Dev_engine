@@ -13,6 +13,8 @@ This game engine will also be used for performance learning practices. Because I
 - [x] Create texture atlas
 - [x] Create new rendering pipeline
 - [x] Create a simple 16x16x16 chunk of minecraft blocks
+- [x] Create a culled chunk mesher
+- [ ] Make a GUI system
 - [ ] Chunk rendering optimisations (greedy meshing)
 - [ ] Maybe implement full RGB color rendering
 - [ ] Introduce prototype terrain generation

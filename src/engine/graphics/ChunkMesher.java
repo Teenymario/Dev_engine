@@ -57,15 +57,16 @@ public class ChunkMesher {
             1, 7, 5,
             1, 3, 7
     };
+    private static int startIndex = 0; //Leave these two here because I don't like constant variable declaration in loops
+    private static int vertexCount = 0;
 
+    //It got so terrible I had to ask chatGPT for help, leaving the comments in so I can learn from this
     public static ChunkMesh meshSingleChunk(Chunk chunk) {
         ArrayList<Float> vertices = new ArrayList<>();
         ArrayList<Integer> indices = new ArrayList<>();
         ArrayList<Float> texCoords = new ArrayList<>();
         float[] coordData = resourceManager.atlas.coordData;
 
-        boolean[] points = new boolean[8];
-        int vertexCount = 0;
         int curFace;
         short block;
 
@@ -79,10 +80,8 @@ public class ChunkMesher {
 
                     //Check for -z | north
                     if(isNotSolid(chunk, x, y, z - 1)) {
-                        for(int i: northInds) {
-                            points[i] = true;
-                            indices.add(vertexCount + i);
-                        }
+                        addFace(vertices, indices, northInds, chunk, x, y, z);
+
                         curFace = blockManager.getBlockByID(block).getModel().faces[0];
 
                         texCoords.add(coordData[curFace * 4 + 2]);
@@ -101,10 +100,8 @@ public class ChunkMesher {
 
                     //Check for +z | south
                     if(isNotSolid(chunk, x, y, z + 1)) {
-                        for(int i: southInds) {
-                            points[i] = true;
-                            indices.add(vertexCount + i);
-                        }
+                        addFace(vertices, indices, southInds, chunk, x, y, z);
+
                         curFace = blockManager.getBlockByID(block).getModel().faces[1];
 
                         texCoords.add(coordData[curFace * 4 + 2]);
@@ -123,10 +120,8 @@ public class ChunkMesher {
 
                     //Check for -x | west
                     if(isNotSolid(chunk, x - 1, y, z)) {
-                        for(int i: westInds) {
-                            points[i] = true;
-                            indices.add(vertexCount + i);
-                        }
+                        addFace(vertices, indices, westInds, chunk, x, y, z);
+
                         curFace = blockManager.getBlockByID(block).getModel().faces[2];
 
                         texCoords.add(coordData[curFace * 4 + 2]);
@@ -145,10 +140,8 @@ public class ChunkMesher {
 
                     //Check for +x | east
                     if(isNotSolid(chunk, x + 1, y, z)) {
-                        for(int i: eastInds) {
-                            points[i] = true;
-                            indices.add(vertexCount + i);
-                        }
+                        addFace(vertices, indices, eastInds, chunk, x, y, z);
+
                         curFace = blockManager.getBlockByID(block).getModel().faces[3];
 
                         texCoords.add(coordData[curFace * 4 + 2]);
@@ -167,14 +160,14 @@ public class ChunkMesher {
 
                     //Check for +y | top
                     if(isNotSolid(chunk, x, y + 1, z)) {
-                        for(int i: topInds) {
-                            points[i] = true;
-                            indices.add(vertexCount + i);
-                        }
+                        addFace(vertices, indices, topInds, chunk, x, y, z);
+
                         curFace = blockManager.getBlockByID(block).getModel().faces[4];
 
-                        texCoords.add(coordData[curFace * 4]);
+                        texCoords.add(coordData[curFace * 4 + 2]);
                         texCoords.add(coordData[curFace * 4 + 1]);
+                        texCoords.add(coordData[curFace * 4]);
+                        texCoords.add(coordData[curFace * 4 + 3]);
                         texCoords.add(coordData[curFace * 4 + 2]);
                         texCoords.add(coordData[curFace * 4 + 3]);
                         texCoords.add(coordData[curFace * 4 + 2]);
@@ -182,22 +175,16 @@ public class ChunkMesher {
                         texCoords.add(coordData[curFace * 4]);
                         texCoords.add(coordData[curFace * 4 + 1]);
                         texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
-                        texCoords.add(coordData[curFace * 4 + 2]);
                         texCoords.add(coordData[curFace * 4 + 3]);
                     }
 
                     //Check for -y | bottom
                     if(isNotSolid(chunk, x, y - 1, z)) {
-                        for(int i: bottomInds) {
-                            points[i] = true;
-                            indices.add(vertexCount + i);
-                        }
+                        addFace(vertices, indices, bottomInds, chunk, x, y, z);
+
                         curFace = blockManager.getBlockByID(block).getModel().faces[5];
 
                         texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
-                        texCoords.add(coordData[curFace * 4]);
                         texCoords.add(coordData[curFace * 4 + 1]);
                         texCoords.add(coordData[curFace * 4]);
                         texCoords.add(coordData[curFace * 4 + 3]);
@@ -207,22 +194,17 @@ public class ChunkMesher {
                         texCoords.add(coordData[curFace * 4 + 1]);
                         texCoords.add(coordData[curFace * 4]);
                         texCoords.add(coordData[curFace * 4 + 1]);
+                        texCoords.add(coordData[curFace * 4]);
+                        texCoords.add(coordData[curFace * 4 + 3]);
                     }
-
-                    for(int i = 0; i < points.length; i++) {
-                        if(points[i]) {
-                            vertices.add(cubeVerts[i * 3] + x);
-                            vertices.add(cubeVerts[i * 3 + 1] + y);
-                            vertices.add(cubeVerts[i * 3 + 2] + z);
-                            vertexCount++;
-                        }
-                    }
-                    Arrays.fill(points, false);
 
                     //End of block check
                 }
             }
         }
+        //Just so the mesher is not messed up for the next chunk mesh
+        startIndex = 0;
+        vertexCount = 0;
 
         //Java please give us a default .toPrimitive() function for giving back a primitive array like T[] with T being the type the arraylist was initialised as
         FloatBuffer vertexBuffer = MemoryUtil.memAllocFloat(vertices.size());
@@ -246,10 +228,30 @@ public class ChunkMesher {
 
     private static boolean isNotSolid(Chunk chunk, int x, int y, int z) {
         // Check if coordinates are within bounds
-        if(x < 0 || x >= Chunk.SIZE || y < 0 || y >= Chunk.SIZE || z < 0 || z >= Chunk.SIZE) {
+        if (x < 0 || x >= Chunk.SIZE || y < 0 || y >= Chunk.SIZE || z < 0 || z >= Chunk.SIZE) {
             return true;
         }
-        return true;
-        //return chunk.getBlock(x, y, z) == 0;
+        return chunk.getBlock(x, y, z) == 0;
+    }
+
+    private static void addFace(ArrayList<Float> vertices, ArrayList<Integer> indices, int[] faceInds, Chunk chunk, int x, int y, int z) {
+        startIndex = vertexCount; // Save the starting index before adding new vertices
+
+        for (int i = 0; i < 6; i++) { // Always 6 indices per face
+            int vertIndex = faceInds[i];
+
+            // Add vertex position
+            vertices.add(cubeVerts[vertIndex * 3] + chunk.pos.x + x);
+            vertices.add(cubeVerts[vertIndex * 3 + 1] + chunk.pos.y + y);
+            vertices.add(cubeVerts[vertIndex * 3 + 2] + chunk.pos.z + z);
+
+            // Track new vertex count
+            vertexCount++;
+        }
+
+        // Assign indices relative to the new vertices
+        for (int i = 0; i < 6; i++) {
+            indices.add(startIndex + i);
+        }
     }
 }

@@ -136,7 +136,6 @@ public class main implements Runnable {
                 delta--;
             }
 
-            System.out.println(camera.pos.print());
             render();
             frames++;
 
@@ -185,7 +184,7 @@ public class main implements Runnable {
 
         //GameObjects
         //object = new GameObject(0, new Vector3f(0, 0.5f, -5), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-        light = new Light(new Vector3f(0, 1, 1), new Vector3f(1, 1, 1));
+        //light = new Light(new Vector3f(0, 1, 1), new Vector3f(1, 1, 1));
         //lightCube = new GameObject(0, light.pos, new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
 
         //terrains.add(new Terrain(0, 0, "/textures/grass_top.png"));
@@ -222,19 +221,29 @@ public class main implements Runnable {
         System.out.println("- Init");
         blockManager = BlockManager.getInstance();
 
-        blockManager.register(new dirt(), registryID, "dirt");
         blockManager.register(new stone(), registryID, "stone");
+        blockManager.register(new dirt(), registryID, "dirt");
         blockManager.register(new grass(), registryID, "grass");
         blockManager.register(new sand(), registryID, "sand");
         blockManager.register(new glass(), registryID, "glass");
         blockManager.register(new stairs(), registryID, "stairs");
+        blockManager.register(new oakLog(), registryID, "oak_log");
 
         blockManager.registerBlockModels();
 
         //Create world
         world = new Dimension("earth");
         chunks = new ArrayList<>();
+
+        chunks.add(new Chunk(-1, 0, -1));
+        chunks.add(new Chunk(0, 0, -1));
+        chunks.add(new Chunk(1, 0, -1));
+        chunks.add(new Chunk(-1, 0, 0));
         chunks.add(new Chunk(0, 0, 0));
+        chunks.add(new Chunk(1, 0, 0));
+        chunks.add(new Chunk(-1, 0, 1));
+        chunks.add(new Chunk(0, 0, 1));
+        chunks.add(new Chunk(1, 0, 1));
 
         //Create world
 
@@ -247,7 +256,7 @@ public class main implements Runnable {
     private void postInit() {
         System.out.println("- Post Init");
 
-        camera = new Camera(new Vector3f(0, 1, 0), new Vector3f(0, 1, 0));
+        camera = new Camera(new Vector3f(0, 17, 0), new Vector3f(0, 1, 0));
         thirdPerson = false;
         speedModifier = 1;
         sprinting = false;
@@ -273,8 +282,8 @@ public class main implements Runnable {
                 objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
             }
         }
-        if (Input.isKeyDown(GLFW.GLFW_KEY_Q)) speedModifier = speedModifier * 1.02f;
-        if (Input.isKeyDown(GLFW.GLFW_KEY_E)) speedModifier = speedModifier / 1.02f;
+        if (Input.isKeyDown(GLFW.GLFW_KEY_Q)) speedModifier += (float) (2.5f * deltaTime);
+        if (Input.isKeyDown(GLFW.GLFW_KEY_E)) speedModifier -= (float) (2.5f * deltaTime);
         sprinting = Input.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL);
 
         if (Input.isKeyDown(GLFW.GLFW_KEY_UP)) {

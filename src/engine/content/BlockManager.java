@@ -83,27 +83,26 @@ public class BlockManager {
                                     model.setType(ModelType.CUSTOM);
                                     break;
                             }
-                            // + 1 is added because there seems to be an offset in the rendering pipeline on the atlas
                         case "north":
-                            faces[0] = resourceManager.getRegistryIndex(tokens[1]) + 1;
+                            faces[0] = resourceManager.getRegistryIndex(tokens[1]) ;
                             break;
                         case "south":
-                            faces[1] = resourceManager.getRegistryIndex(tokens[1]) + 1;
+                            faces[1] = resourceManager.getRegistryIndex(tokens[1]);
                             break;
                         case "west":
-                            faces[2] = resourceManager.getRegistryIndex(tokens[1]) + 1;
+                            faces[2] = resourceManager.getRegistryIndex(tokens[1]);
                             break;
                         case "east":
-                            faces[3] = resourceManager.getRegistryIndex(tokens[1]) + 1;
+                            faces[3] = resourceManager.getRegistryIndex(tokens[1]);
                             break;
                         case "top":
-                            faces[4] = resourceManager.getRegistryIndex(tokens[1]) + 1;
+                            faces[4] = resourceManager.getRegistryIndex(tokens[1]);
                             break;
                         case "bottom":
-                            faces[5] = resourceManager.getRegistryIndex(tokens[1]) + 1;
+                            faces[5] = resourceManager.getRegistryIndex(tokens[1]);
                             break;
                         case "all":
-                            Arrays.fill(faces, resourceManager.getRegistryIndex(tokens[1]) + 1);
+                            Arrays.fill(faces, resourceManager.getRegistryIndex(tokens[1]));
                             break;
                         case "transparent":
                             model.setTransparent();
