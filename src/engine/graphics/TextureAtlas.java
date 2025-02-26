@@ -24,7 +24,6 @@ public class TextureAtlas {
         HashMap<Integer, ArrayList<Integer>> textureIDs = new HashMap<>();           //This is here because there seems to be a little issue with the IDs not being properly linked to coordData
 
         ArrayList<Integer> sizes = new ArrayList<>();
-        int[] IDs = new int[textures.size()];
 
         int counter = -1;
         for(Texture texture : textures) {
