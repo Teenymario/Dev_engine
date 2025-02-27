@@ -14,6 +14,7 @@ import engine.objects.GameObject;
 import engine.objects.Light;
 import engine.utils.FileCallback;
 import engine.utils.FileUtils;
+import engine.world.DimensionManager;
 import engine.world.dimension.Dimension;
 import engine.world.terrain.Chunk;
 import org.lwjgl.glfw.GLFW;
@@ -67,8 +68,8 @@ public class main implements Runnable {
     public static ResourceManager resourceManager;
     public static BlockManager blockManager;
     //public static ArrayList<ItemBase> contentItems = new ArrayList<>();
-    public static Dimension world;
-    public static ArrayList<Chunk> chunks;
+    public static DimensionManager dimensionManager;
+    public static String curDimension;
 
     //Simulation
     public static int tickRate = 20;     //Per second
@@ -144,6 +145,15 @@ public class main implements Runnable {
                 timer += 1000;
                 frames = 0;
                 ticks = 0;
+
+                for(int i = 0; i < dimensionManager.getDimension(curDimension).chunks.size(); i ++) {
+                    Chunk chunk = dimensionManager.getDimension(curDimension).chunks.get(i);
+
+                    System.arraycopy(chunk.blocks, 0, chunk.blocks, 1, chunk.blocks.length - 1);
+                    chunk.remesh();
+
+                    dimensionManager.getDimension(curDimension).chunks.set(i, chunk);
+                }
             }
 
             GLFW.glfwPollEvents();
@@ -232,20 +242,14 @@ public class main implements Runnable {
         blockManager.registerBlockModels();
 
         //Create world
-        world = new Dimension("earth");
-        chunks = new ArrayList<>();
-
-        chunks.add(new Chunk(-1, 0, -1));
-        chunks.add(new Chunk(0, 0, -1));
-        chunks.add(new Chunk(1, 0, -1));
-        chunks.add(new Chunk(-1, 0, 0));
-        chunks.add(new Chunk(0, 0, 0));
-        chunks.add(new Chunk(1, 0, 0));
-        chunks.add(new Chunk(-1, 0, 1));
-        chunks.add(new Chunk(0, 0, 1));
-        chunks.add(new Chunk(1, 0, 1));
+        dimensionManager = DimensionManager.getInstance();
+        dimensionManager.registerDimension(new Dimension("earth"), registryID);
 
         //Create world
+
+        //Load into world
+        curDimension = concat(registryID, ":earth");
+        //Load into world
 
         //Guis
         //guis.add(new GUITexture(0, new Vector2f(0f, 0f), new Vector2f(0.02f, 0.02f), "/textures/gui/cursor.png"));

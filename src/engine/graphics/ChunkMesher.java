@@ -7,7 +7,6 @@ import org.lwjgl.system.MemoryUtil;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import static main.main.resourceManager;
 import static main.main.blockManager;
@@ -59,6 +58,7 @@ public class ChunkMesher {
     };
     private static int startIndex = 0; //Leave these two here because I don't like constant variable declaration in loops
     private static int vertexCount = 0;
+    private static ArrayList<Short> nonSolid = new ArrayList<>();
 
     //It got so terrible I had to ask chatGPT for help, leaving the comments in so I can learn from this
     public static ChunkMesh meshSingleChunk(Chunk chunk) {
@@ -70,6 +70,9 @@ public class ChunkMesher {
         int curFace;
         short block;
 
+        nonSolid.add((short) 0);
+        nonSolid.add((short) 5);
+
         for(int y = 0; y < Chunk.SIZE; y++) {
             for(int z = 0; z < Chunk.SIZE; z++) {
                 for(int x = 0; x < Chunk.SIZE; x++) {
@@ -79,7 +82,7 @@ public class ChunkMesher {
                     }
 
                     //Check for -z | north
-                    if(isNotSolid(chunk, x, y, z - 1)) {
+                    if(shouldAdd(chunk, x, y, z - 1, x, y, z)) {
                         addFace(vertices, indices, northInds, chunk, x, y, z);
 
                         curFace = blockManager.getBlockByID(block).getModel().faces[0];
@@ -99,7 +102,7 @@ public class ChunkMesher {
                     }
 
                     //Check for +z | south
-                    if(isNotSolid(chunk, x, y, z + 1)) {
+                    if(shouldAdd(chunk, x, y, z + 1, x, y, z)) {
                         addFace(vertices, indices, southInds, chunk, x, y, z);
 
                         curFace = blockManager.getBlockByID(block).getModel().faces[1];
@@ -119,7 +122,7 @@ public class ChunkMesher {
                     }
 
                     //Check for -x | west
-                    if(isNotSolid(chunk, x - 1, y, z)) {
+                    if(shouldAdd(chunk, x - 1, y, z, x, y, z)) {
                         addFace(vertices, indices, westInds, chunk, x, y, z);
 
                         curFace = blockManager.getBlockByID(block).getModel().faces[2];
@@ -139,7 +142,7 @@ public class ChunkMesher {
                     }
 
                     //Check for +x | east
-                    if(isNotSolid(chunk, x + 1, y, z)) {
+                    if(shouldAdd(chunk, x + 1, y, z, x, y, z)) {
                         addFace(vertices, indices, eastInds, chunk, x, y, z);
 
                         curFace = blockManager.getBlockByID(block).getModel().faces[3];
@@ -159,7 +162,7 @@ public class ChunkMesher {
                     }
 
                     //Check for +y | top
-                    if(isNotSolid(chunk, x, y + 1, z)) {
+                    if(shouldAdd(chunk, x, y + 1, z, x, y, z)) {
                         addFace(vertices, indices, topInds, chunk, x, y, z);
 
                         curFace = blockManager.getBlockByID(block).getModel().faces[4];
@@ -179,7 +182,7 @@ public class ChunkMesher {
                     }
 
                     //Check for -y | bottom
-                    if(isNotSolid(chunk, x, y - 1, z)) {
+                    if(shouldAdd(chunk, x, y - 1, z, x, y, z)) {
                         addFace(vertices, indices, bottomInds, chunk, x, y, z);
 
                         curFace = blockManager.getBlockByID(block).getModel().faces[5];
@@ -226,12 +229,16 @@ public class ChunkMesher {
         return new ChunkMesh(vertexBuffer, indexBuffer, texBuffer);
     }
 
-    private static boolean isNotSolid(Chunk chunk, int x, int y, int z) {
+    private static boolean shouldAdd(Chunk chunk, int x, int y, int z, int OGx, int OGy, int OGz) {
         // Check if coordinates are within bounds
         if (x < 0 || x >= Chunk.SIZE || y < 0 || y >= Chunk.SIZE || z < 0 || z >= Chunk.SIZE) {
             return true;
         }
-        return chunk.getBlock(x, y, z) == 0;
+
+        if(nonSolid.contains(chunk.getBlock(OGx, OGy, OGz)) && nonSolid.contains(chunk.getBlock(x, y, z))) {
+            return false;
+        }
+        return nonSolid.contains(chunk.getBlock(x, y, z));
     }
 
     private static void addFace(ArrayList<Float> vertices, ArrayList<Integer> indices, int[] faceInds, Chunk chunk, int x, int y, int z) {

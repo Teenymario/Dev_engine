@@ -21,8 +21,8 @@ public class ChunkRenderer implements IChunkRenderer {
         window = Window.getInstance();
     }
 
-    public void render(ArrayList<Chunk> blocks) {
-        for(Chunk chunk : blocks) {
+    public void render(ArrayList<Chunk> chunks) {
+        for(Chunk chunk : chunks) {
             bindMesh(chunk.mesh);
             shader.setUniform("worldPos", chunk.pos);
             shader.setUniform("view", main.camera.viewMatrix);

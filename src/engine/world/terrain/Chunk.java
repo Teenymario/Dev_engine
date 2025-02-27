@@ -3,6 +3,8 @@ package engine.world.terrain;
 import engine.graphics.ChunkMesher;
 import engine.graphics.models.ChunkMesh;
 
+import java.util.Random;
+
 import static engine.maths.Vector3.Vector3i;
 
 public class Chunk {
@@ -22,20 +24,11 @@ public class Chunk {
     public Chunk(int x, int y, int z) {
         pos = new Vector3i(x * SIZE / 2, y * SIZE / 2, z * SIZE / 2);
 
-        for(int i = 0; i < blocks.length; i++) {
-            y = (i >> (2 * bitsPerCoord)) & MASK;
-            if(y == SIZE - 3) {
-                blocks[i] = 3;
-            } else if(y < SIZE -5) {
-                blocks[i] = 1;
-            } else if(y < SIZE -3) {
-                blocks[i] = 2;
-            } else {
-                blocks[i] = 0;
-            }
-        }
+        Random rand = new Random();
 
-        blocks[blocks.length - 1] = 7;
+        for(int i = 0; i < blocks.length; i++) {
+            blocks[i] = (short) (rand.nextInt(6) + 1);
+        }
 
         mesh = ChunkMesher.meshSingleChunk(this);
     }

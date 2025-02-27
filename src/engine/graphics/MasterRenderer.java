@@ -19,7 +19,7 @@ public class MasterRenderer<obj extends IChunkRenderer, terrain extends ITerrain
     }
 
     public void render(Light light) {
-        chunkRenderer.render(main.chunks);
+        chunkRenderer.render(main.dimensionManager.getDimension(main.curDimension).chunks);
         //terrainRenderer.render(main.world.chunks, light);
         guiRenderer.render(main.guis);
     }

@@ -27,4 +27,7 @@ Definitions of material in float[] form
 
 void main() {
     outColor = mix(vec4(skyColor, 1.0), texture(textureAtlas, passTextureCoord), visibility);
+    if(outColor.a < 0.1) {
+        discard;
+    }
 }

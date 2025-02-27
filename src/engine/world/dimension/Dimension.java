@@ -2,10 +2,12 @@ package engine.world.dimension;
 
 import engine.world.terrain.Chunk;
 
+import java.util.ArrayList;
+
 public class Dimension implements IDimensionBase {
     private final String registryName;
     public final int SIZE = 1;
-    public Chunk[] chunks = new Chunk[SIZE * SIZE * SIZE];
+    public ArrayList<Chunk> chunks;
 
     /* Position utils
     *  x = i & MASK
@@ -17,9 +19,10 @@ public class Dimension implements IDimensionBase {
 
     public Dimension(String registryName) {
         this.registryName = registryName;
+        this.chunks = new ArrayList<>();
 
-        for(int i = 0; i < chunks.length; i++) {
-            chunks[i] = new Chunk(i & MASK, (i >> bitsPerCoord) & MASK, (i >> (2 * bitsPerCoord)) & MASK);
+        for(int i = 0; i < (SIZE * SIZE * SIZE); i++) {
+            chunks.add(new Chunk(i & MASK, (i >> bitsPerCoord) & MASK, (i >> (2 * bitsPerCoord)) & MASK));
         }
     }
 
