@@ -14,6 +14,7 @@ import engine.objects.GameObject;
 import engine.objects.Light;
 import engine.utils.FileCallback;
 import engine.utils.FileUtils;
+import engine.world.ChunkManager;
 import engine.world.DimensionManager;
 import engine.world.dimension.Dimension;
 import engine.world.terrain.Chunk;
@@ -69,12 +70,14 @@ public class main implements Runnable {
     public static BlockManager blockManager;
     //public static ArrayList<ItemBase> contentItems = new ArrayList<>();
     public static DimensionManager dimensionManager;
+    public static ChunkManager chunkManager;
     public static String curDimension;
 
     //Simulation
-    public static int tickRate = 20;     //Per second
-    public static int frameRate = 60;    //Per second
+    public static int tickRate = 20;        //Per second
+    public static int frameRate = 60;       //Per second
     public static double deltaTime = 0;
+    public static int renderDistance = 8;   //Default to 8
 
     //Util
     public static final StringBuilder stringer = new StringBuilder();    //Please use the concat function. If you use this directly make sure to run .setLength(0); on the thing after you finish
@@ -259,6 +262,10 @@ public class main implements Runnable {
     //Finalise
     private void postInit() {
         System.out.println("- Post Init");
+
+        chunkManager = ChunkManager.getInstance();
+        chunkManager.setDistance(renderDistance);
+        chunkManager.changeWorld(curDimension);
 
         camera = new Camera(new Vector3f(0, 17, 0), new Vector3f(0, 1, 0));
         thirdPerson = false;
