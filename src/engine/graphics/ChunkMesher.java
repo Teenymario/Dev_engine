@@ -12,14 +12,6 @@ import static main.main.resourceManager;
 import static main.main.blockManager;
 
 public class ChunkMesher {
-    /* Position utils
-     *  x = i & MASK
-     *  y = (i >> bitsPerCoord) & MASK
-     *  z = (i >> (2 * bitsPerCoord)) & MASK
-     * */
-    private final int bitsPerCoord = (int) (Math.log(Chunk.SIZE) / Math.log(2));
-    private final int MASK = (1 << bitsPerCoord) - 1;
-
     //8 vertices for a full cube
     private static final float[] cubeVerts = {
             0.5f,  0.5f,  -0.5f,
@@ -59,19 +51,18 @@ public class ChunkMesher {
     private static int startIndex = 0; //Leave these two here because I don't like constant variable declaration in loops
     private static int vertexCount = 0;
     private static ArrayList<Short> nonSolid = new ArrayList<>();
+    static {
+        nonSolid.add((short) 0);
+        nonSolid.add((short) 5);
+    }
 
     //It got so terrible I had to ask chatGPT for help, leaving the comments in so I can learn from this
     public static ChunkMesh meshSingleChunk(Chunk chunk) {
-        ArrayList<Float> vertices = new ArrayList<>();
-        ArrayList<Integer> indices = new ArrayList<>();
-        ArrayList<Float> texCoords = new ArrayList<>();
-        float[] coordData = resourceManager.atlas.coordData;
+        FloatBuffer vertices = MemoryUtil.memAllocFloat(Chunk.SIZE_CUBED * 24);  //6 faces, 4 vertices per face
+        IntBuffer indices = MemoryUtil.memAllocInt(Chunk.SIZE_CUBED * 36);       //6 faces, 6 indices per face
+        FloatBuffer texCoords = MemoryUtil.memAllocFloat(Chunk.SIZE_CUBED * 48); //two floats per vertex
 
-        int curFace;
         short block;
-
-        nonSolid.add((short) 0);
-        nonSolid.add((short) 5);
 
         for(int y = 0; y < Chunk.SIZE; y++) {
             for(int z = 0; z < Chunk.SIZE; z++) {
@@ -82,123 +73,39 @@ public class ChunkMesher {
                     }
 
                     //Check for -z | north
-                    if(shouldAdd(chunk, x, y, z - 1, x, y, z)) {
+                    if(shouldAdd(chunk, x, y, z - 1, block)) {
                         addFace(vertices, indices, northInds, chunk, x, y, z);
-
-                        curFace = blockManager.getBlockByID(block).getModel().faces[0];
-
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
+                        addTextureCoords(texCoords, resourceManager.atlas.coordData, blockManager.getBlockByID(block).getModel().faces[0]);
                     }
 
                     //Check for +z | south
-                    if(shouldAdd(chunk, x, y, z + 1, x, y, z)) {
+                    if(shouldAdd(chunk, x, y, z + 1, block)) {
                         addFace(vertices, indices, southInds, chunk, x, y, z);
-
-                        curFace = blockManager.getBlockByID(block).getModel().faces[1];
-
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
+                        addTextureCoords(texCoords, resourceManager.atlas.coordData, blockManager.getBlockByID(block).getModel().faces[1]);
                     }
 
                     //Check for -x | west
-                    if(shouldAdd(chunk, x - 1, y, z, x, y, z)) {
+                    if(shouldAdd(chunk, x - 1, y, z, block)) {
                         addFace(vertices, indices, westInds, chunk, x, y, z);
-
-                        curFace = blockManager.getBlockByID(block).getModel().faces[2];
-
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
+                        addTextureCoords(texCoords, resourceManager.atlas.coordData, blockManager.getBlockByID(block).getModel().faces[2]);
                     }
 
                     //Check for +x | east
-                    if(shouldAdd(chunk, x + 1, y, z, x, y, z)) {
+                    if(shouldAdd(chunk, x + 1, y, z, block)) {
                         addFace(vertices, indices, eastInds, chunk, x, y, z);
-
-                        curFace = blockManager.getBlockByID(block).getModel().faces[3];
-
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
+                        addTextureCoords(texCoords, resourceManager.atlas.coordData, blockManager.getBlockByID(block).getModel().faces[3]);
                     }
 
                     //Check for +y | top
-                    if(shouldAdd(chunk, x, y + 1, z, x, y, z)) {
+                    if(shouldAdd(chunk, x, y + 1, z, block)) {
                         addFace(vertices, indices, topInds, chunk, x, y, z);
-
-                        curFace = blockManager.getBlockByID(block).getModel().faces[4];
-
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
+                        addTextureCoords(texCoords, resourceManager.atlas.coordData, blockManager.getBlockByID(block).getModel().faces[4]);
                     }
 
                     //Check for -y | bottom
-                    if(shouldAdd(chunk, x, y - 1, z, x, y, z)) {
+                    if(shouldAdd(chunk, x, y - 1, z, block)) {
                         addFace(vertices, indices, bottomInds, chunk, x, y, z);
-
-                        curFace = blockManager.getBlockByID(block).getModel().faces[5];
-
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
-                        texCoords.add(coordData[curFace * 4 + 2]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 1]);
-                        texCoords.add(coordData[curFace * 4]);
-                        texCoords.add(coordData[curFace * 4 + 3]);
+                        addTextureCoords(texCoords, resourceManager.atlas.coordData, blockManager.getBlockByID(block).getModel().faces[5]);
                     }
 
                     //End of block check
@@ -210,47 +117,36 @@ public class ChunkMesher {
         vertexCount = 0;
 
         //Java please give us a default .toPrimitive() function for giving back a primitive array like T[] with T being the type the arraylist was initialised as
-        FloatBuffer vertexBuffer = MemoryUtil.memAllocFloat(vertices.size());
-        for(float point: vertices) {
-            vertexBuffer.put(point);
-        }
-        vertexBuffer.flip();
 
-        FloatBuffer texBuffer = MemoryUtil.memAllocFloat(texCoords.size());
-        for(float texCoord: texCoords) {
-            texBuffer.put(texCoord);
-        }
-        texBuffer.flip();
+        vertices.flip();
+        texCoords.flip();
+        indices.flip();
 
-        IntBuffer indexBuffer = MemoryUtil.memAllocInt(indices.size());
-        indexBuffer.put(indices.stream().mapToInt(i -> i).toArray());
-        indexBuffer.flip();
-
-        return new ChunkMesh(vertexBuffer, indexBuffer, texBuffer);
+        return new ChunkMesh(vertices, indices, texCoords);
     }
 
-    private static boolean shouldAdd(Chunk chunk, int x, int y, int z, int OGx, int OGy, int OGz) {
-        // Check if coordinates are within bounds
+    private static boolean shouldAdd(Chunk chunk, int x, int y, int z, short curBlock) {
         if (x < 0 || x >= Chunk.SIZE || y < 0 || y >= Chunk.SIZE || z < 0 || z >= Chunk.SIZE) {
             return true;
         }
 
-        if(nonSolid.contains(chunk.getBlock(OGx, OGy, OGz)) && nonSolid.contains(chunk.getBlock(x, y, z))) {
+        short neighbor = chunk.getBlock(x, y, z);
+        if(nonSolid.contains(neighbor) && nonSolid.contains(curBlock)) {
             return false;
         }
-        return nonSolid.contains(chunk.getBlock(x, y, z));
+        return nonSolid.contains(neighbor);
     }
 
-    private static void addFace(ArrayList<Float> vertices, ArrayList<Integer> indices, int[] faceInds, Chunk chunk, int x, int y, int z) {
+    private static void addFace(FloatBuffer vertices, IntBuffer indices, int[] faceInds, Chunk chunk, int x, int y, int z) {
         startIndex = vertexCount; // Save the starting index before adding new vertices
 
         for (int i = 0; i < 6; i++) { // Always 6 indices per face
             int vertIndex = faceInds[i];
 
             // Add vertex position
-            vertices.add(cubeVerts[vertIndex * 3] + chunk.pos.x + x);
-            vertices.add(cubeVerts[vertIndex * 3 + 1] + chunk.pos.y + y);
-            vertices.add(cubeVerts[vertIndex * 3 + 2] + chunk.pos.z + z);
+            vertices.put(cubeVerts[vertIndex * 3] + chunk.pos.x + x);
+            vertices.put(cubeVerts[vertIndex * 3 + 1] + chunk.pos.y + y);
+            vertices.put(cubeVerts[vertIndex * 3 + 2] + chunk.pos.z + z);
 
             // Track new vertex count
             vertexCount++;
@@ -258,7 +154,22 @@ public class ChunkMesher {
 
         // Assign indices relative to the new vertices
         for (int i = 0; i < 6; i++) {
-            indices.add(startIndex + i);
+            indices.put(startIndex + i);
         }
+    }
+
+    private static void addTextureCoords(FloatBuffer texCoords, float[] coordData, int curFace) {
+        texCoords.put(coordData[curFace * 4 + 2]);
+        texCoords.put(coordData[curFace * 4 + 1]);
+        texCoords.put(coordData[curFace * 4]);
+        texCoords.put(coordData[curFace * 4 + 3]);
+        texCoords.put(coordData[curFace * 4 + 2]);
+        texCoords.put(coordData[curFace * 4 + 3]);
+        texCoords.put(coordData[curFace * 4 + 2]);
+        texCoords.put(coordData[curFace * 4 + 1]);
+        texCoords.put(coordData[curFace * 4]);
+        texCoords.put(coordData[curFace * 4 + 1]);
+        texCoords.put(coordData[curFace * 4]);
+        texCoords.put(coordData[curFace * 4 + 3]);
     }
 }

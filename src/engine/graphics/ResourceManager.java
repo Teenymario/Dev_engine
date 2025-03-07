@@ -17,7 +17,7 @@ public class ResourceManager {
     private ResourceManager() {}
 
     public void register(String path, String registryClass, String registry) {
-        registry = concat(registryClass + ":" + registry);  //Registryclass will have to eventually be derived to a mod specific indicator like forge
+        registry = concat(registryClass + ":" + registry);  //RegistryClass will have to eventually be derived to a mod specific indicator like forge
 
         if(!registries.contains(registry)) {
             textures.add(new Texture(path));

@@ -85,6 +85,7 @@ public class main implements Runnable {
 
     //Util
     public static final StringBuilder stringer = new StringBuilder();    //Please use the concat function. If you use this directly make sure to run .setLength(0); on the thing after you finish
+    public static double TIME_S = 0D;
 
     public static String concat(Object... args) {
         for(Object arg : args) {
@@ -147,6 +148,7 @@ public class main implements Runnable {
             render();
             frames++;
 
+            //Triggers each second
             if (System.currentTimeMillis() - timer > 1000) {
                 GLFW.glfwSetWindowTitle(window.getWindow(), window.getTitle() + " | fps: " + frames + " | tps: " + ticks);
                 timer += 1000;
@@ -181,23 +183,6 @@ public class main implements Runnable {
         guiRenderer = new GUIRenderer(guiShader);
 
         masterRenderer = new MasterRenderer<>(chunkRenderer, terrainRenderer, guiRenderer);
-
-        //Meshes
-        //ObjectMesh.construct("resources/models/Grass_Block.obj").constructMesh();
-        //ObjectMesh.construct("resources/models/Dirt_Block.obj").constructMesh();
-        //ObjectMesh.construct("resources/models/Stone_Block.obj").constructMesh();
-        //ObjectMesh.construct("resources/models/light.obj").constructMesh();
-
-        //Meshes
-
-        //GameObjects
-        //object = new GameObject(0, new Vector3f(0, 0.5f, -5), new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-        //light = new Light(new Vector3f(0, 1, 1), new Vector3f(1, 1, 1));
-        //lightCube = new GameObject(0, light.pos, new Vector3f(0, 0, 0), new Vector3f(1, 1, 1));
-
-        //terrains.add(new Terrain(0, 0, "/textures/grass_top.png"));
-        //terrains.add(new Terrain(1, 0, "/textures/grass_top.png"));
-        //GameObjects
     }
 
     //Loading game resources and graphics
@@ -222,37 +207,6 @@ public class main implements Runnable {
         }, "resources/textures/");
         resourceManager.registerAtlas();
         System.gc();
-
-        int size = 512;
-        double FREQUENCY = 0.5D / 24D;
-
-        BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
-        for (int y = 0; y < size; y++) {
-            for (int x = 0; x < size; x++) {
-                double noise = ((OpenSimplex2S.noise2_ImproveX(1134524145635334L, x * FREQUENCY, y * FREQUENCY) + 1) / 2);
-                int r = (int) (noise * 256) - 1;
-                int g = (int) (noise * 256) - 1;
-                int b = (int) (noise * 256) - 1;
-
-                /*
-                if(noise > 0.5d) {
-                    g = 127;
-                } else {
-                    b = 127;
-                }
-                */
-
-                int a = 255;
-
-                int argb = (a << 24) | (r << 16) | (g << 8) | b;
-                img.setRGB(x, y, argb);
-            }
-        }
-        try {
-            ImageIO.write(img, "png", new File("output.png"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     //Loading game content
@@ -347,6 +301,12 @@ public class main implements Runnable {
             light.pos.y -= 0.025f * speedModifier;
             objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
         }
+        if(Input.isKeyDown(GLFW.GLFW_KEY_R)) {
+            for(Chunk chunk : dimensionManager.getDimension(curDimension).chunks) {
+                TIME_S += 0.1D * deltaTime;
+                chunk.generate().remesh();
+            }
+        }
         if (lightLocked) {
             light.pos.x = camera.pos.x;
             light.pos.y = camera.pos.y;
@@ -388,6 +348,10 @@ public class main implements Runnable {
 
         if(!error) {
             System.out.println("Goodbye :)");
+            System.exit(0);
+        } else {
+            System.out.println("Oh no there was an error :(");
+            System.exit(1);
         }
     }
 
