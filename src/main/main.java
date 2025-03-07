@@ -17,10 +17,14 @@ import engine.utils.FileUtils;
 import engine.world.ChunkManager;
 import engine.world.DimensionManager;
 import engine.world.dimension.Dimension;
+import engine.world.generation.OpenSimplex2S;
 import engine.world.terrain.Chunk;
 import org.lwjgl.glfw.GLFW;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -148,15 +152,6 @@ public class main implements Runnable {
                 timer += 1000;
                 frames = 0;
                 ticks = 0;
-
-                for(int i = 0; i < dimensionManager.getDimension(curDimension).chunks.size(); i ++) {
-                    Chunk chunk = dimensionManager.getDimension(curDimension).chunks.get(i);
-
-                    System.arraycopy(chunk.blocks, 0, chunk.blocks, 1, chunk.blocks.length - 1);
-                    chunk.remesh();
-
-                    dimensionManager.getDimension(curDimension).chunks.set(i, chunk);
-                }
             }
 
             GLFW.glfwPollEvents();
@@ -227,6 +222,37 @@ public class main implements Runnable {
         }, "resources/textures/");
         resourceManager.registerAtlas();
         System.gc();
+
+        int size = 512;
+        double FREQUENCY = 0.5D / 24D;
+
+        BufferedImage img = new BufferedImage(size, size, BufferedImage.TYPE_INT_ARGB);
+        for (int y = 0; y < size; y++) {
+            for (int x = 0; x < size; x++) {
+                double noise = ((OpenSimplex2S.noise2_ImproveX(1134524145635334L, x * FREQUENCY, y * FREQUENCY) + 1) / 2);
+                int r = (int) (noise * 256) - 1;
+                int g = (int) (noise * 256) - 1;
+                int b = (int) (noise * 256) - 1;
+
+                /*
+                if(noise > 0.5d) {
+                    g = 127;
+                } else {
+                    b = 127;
+                }
+                */
+
+                int a = 255;
+
+                int argb = (a << 24) | (r << 16) | (g << 8) | b;
+                img.setRGB(x, y, argb);
+            }
+        }
+        try {
+            ImageIO.write(img, "png", new File("output.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //Loading game content
