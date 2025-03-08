@@ -10,7 +10,7 @@ uniform ivec3 worldPos;
 uniform mat4 view;
 uniform mat4 project;
 
-const float density = 0.007;
+const float density = 0.0035;
 const float gradient = 1.5;
 
 void main() {

@@ -26,6 +26,6 @@ public interface IChunkRenderer {
         GL11.glDisable(GL11.GL_CULL_FACE);
     }
 
-    void render(ArrayList<Chunk> block);
+    void render(Chunk[] block);
 
 }

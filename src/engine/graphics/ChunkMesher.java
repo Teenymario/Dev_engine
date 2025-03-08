@@ -144,9 +144,9 @@ public class ChunkMesher {
             int vertIndex = faceInds[i];
 
             // Add vertex position
-            vertices.put(cubeVerts[vertIndex * 3] + chunk.pos.x + x);
-            vertices.put(cubeVerts[vertIndex * 3 + 1] + chunk.pos.y + y);
-            vertices.put(cubeVerts[vertIndex * 3 + 2] + chunk.pos.z + z);
+            vertices.put(cubeVerts[vertIndex * 3] + chunk.visualPos.x + x);
+            vertices.put(cubeVerts[vertIndex * 3 + 1] + chunk.visualPos.y + y);
+            vertices.put(cubeVerts[vertIndex * 3 + 2] + chunk.visualPos.z + z);
 
             // Track new vertex count
             vertexCount++;

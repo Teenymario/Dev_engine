@@ -29,4 +29,10 @@ This game engine will also be used for performance learning practices. Because I
 - [ ] Use bytecode manipulation from the modding api to manipulate and rewrite code within the game
 - [ ] Modify a mod using another mod
 
-After this we tackle the ####### optimised 1.12.2 mod loader
+### Potential points of consideration:
+Making chunk meshes via a growth algorithm, finding the unknown walls of a 3D maze where air is the walls  
+Using raytracing to mesh a chunk, maybe implementing it with the previous system as well
+
+### What do we do after the goals?
+
+We tackle the ####### optimised 1.12.2 mod loader

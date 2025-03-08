@@ -1,4 +1,4 @@
-package engine.world.generation;
+package engine.world.noise;
 
 public class FractalBrownian {
 }

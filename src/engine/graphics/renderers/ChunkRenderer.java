@@ -9,9 +9,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL30;
 
-import java.util.ArrayList;
-
-//This will be short lived
+//This will not be short lived
 public class ChunkRenderer implements IChunkRenderer {
     private Shader shader;
     private Window window;
@@ -21,10 +19,10 @@ public class ChunkRenderer implements IChunkRenderer {
         window = Window.getInstance();
     }
 
-    public void render(ArrayList<Chunk> chunks) {
+    public void render(Chunk[] chunks) {
         for(Chunk chunk : chunks) {
             bindMesh(chunk.mesh);
-            shader.setUniform("worldPos", chunk.pos);
+            shader.setUniform("worldPos", chunk.visualPos);
             shader.setUniform("view", main.camera.viewMatrix);
             shader.setUniform("project", window.getProjectionMatrix());
             shader.setUniform("skyColor", window.background);

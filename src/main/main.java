@@ -16,15 +16,14 @@ import engine.utils.FileCallback;
 import engine.utils.FileUtils;
 import engine.world.ChunkManager;
 import engine.world.DimensionManager;
+import engine.world.GeneratorManager;
 import engine.world.dimension.Dimension;
-import engine.world.generation.OpenSimplex2S;
+import engine.world.generators.FlatGenerator;
+import engine.world.generators.NoiseGenerator;
 import engine.world.terrain.Chunk;
 import org.lwjgl.glfw.GLFW;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,6 +74,7 @@ public class main implements Runnable {
     //public static ArrayList<ItemBase> contentItems = new ArrayList<>();
     public static DimensionManager dimensionManager;
     public static ChunkManager chunkManager;
+    public static GeneratorManager generatorManager;
     public static String curDimension;
 
     //Simulation
@@ -82,6 +82,7 @@ public class main implements Runnable {
     public static int frameRate = 60;       //Per second
     public static double deltaTime = 0;
     public static int renderDistance = 8;   //Default to 8
+    public static Vector3f lastChunkLoad;
 
     //Util
     public static final StringBuilder stringer = new StringBuilder();    //Please use the concat function. If you use this directly make sure to run .setLength(0); on the thing after you finish
@@ -113,12 +114,15 @@ public class main implements Runnable {
 
         //Setup engine
         instantiate();
+        System.gc();
 
         //Load resources
         preInit();
+        System.gc();
 
         //Load content
         init();
+        System.gc();
 
         //Finalise
         postInit();
@@ -206,7 +210,6 @@ public class main implements Runnable {
             }
         }, "resources/textures/");
         resourceManager.registerAtlas();
-        System.gc();
     }
 
     //Loading game content
@@ -224,9 +227,15 @@ public class main implements Runnable {
 
         blockManager.registerBlockModels();
 
+        //Create world generators
+        generatorManager = GeneratorManager.getInstance();
+        generatorManager.register(new FlatGenerator(), registryID, "flat");
+        generatorManager.register(new NoiseGenerator(0), registryID, "noise");
+        //Create world generators
+
         //Create world
         dimensionManager = DimensionManager.getInstance();
-        dimensionManager.registerDimension(new Dimension("earth"), registryID);
+        dimensionManager.registerDimension(new Dimension("earth", generatorManager.getGenerator("devEngine:noise")), registryID);
 
         //Create world
 
@@ -243,11 +252,12 @@ public class main implements Runnable {
     private void postInit() {
         System.out.println("- Post Init");
 
-        chunkManager = ChunkManager.getInstance();
-        chunkManager.setDistance(renderDistance);
-        chunkManager.changeWorld(curDimension);
-
+        lastChunkLoad = new Vector3f(0, 17, 0);
         camera = new Camera(new Vector3f(0, 17, 0), new Vector3f(0, 1, 0));
+
+        chunkManager = ChunkManager.getInstance();
+        chunkManager.setup(curDimension, renderDistance);
+
         thirdPerson = false;
         speedModifier = 1;
         sprinting = false;
@@ -301,12 +311,14 @@ public class main implements Runnable {
             light.pos.y -= 0.025f * speedModifier;
             objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
         }
-        if(Input.isKeyDown(GLFW.GLFW_KEY_R)) {
+
+        /*if(Input.isKeyDown(GLFW.GLFW_KEY_R)) {
             for(Chunk chunk : dimensionManager.getDimension(curDimension).chunks) {
                 TIME_S += 0.1D * deltaTime;
                 chunk.generate().remesh();
             }
-        }
+        }*/
+
         if (lightLocked) {
             light.pos.x = camera.pos.x;
             light.pos.y = camera.pos.y;
@@ -315,7 +327,14 @@ public class main implements Runnable {
     }
 
     private void tick() {
+        int shiftX = (int) (camera.pos.x - lastChunkLoad.x) / 16;
+        int shiftY = (int) (camera.pos.y - lastChunkLoad.y) / 16;
+        int shiftZ = (int) (camera.pos.z - lastChunkLoad.z) / 16;
 
+        if(Math.abs(shiftX) >= 1 || Math.abs(shiftY) >= 1 || Math.abs(shiftZ) >= 1) {
+            chunkManager.loadChunks(shiftX, shiftY, shiftZ);
+            lastChunkLoad.redefine(camera.pos);
+        }
     }
 
     private void update() {

@@ -1,4 +1,4 @@
-package engine.world.generation;
+package engine.world.noise;
 
 //Derived from https://github.com/KdotJPG/OpenSimplex2/blob/master/java/OpenSimplex2S.java
 //Removed some redundant variables by inlining them

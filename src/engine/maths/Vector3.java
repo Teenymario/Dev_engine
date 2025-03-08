@@ -23,6 +23,12 @@ public class Vector3 {
             this.y = y;
             this.z = z;
         }
+
+        public void redefine(Vector3f newPos) {
+            this.x = newPos.x;
+            this.y = newPos.y;
+            this.z = newPos.z;
+        }
         //Util
 
 

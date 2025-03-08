@@ -4,6 +4,7 @@ import engine.graphics.renderers.IChunkRenderer;
 import engine.graphics.renderers.IGUIRendererBase;
 import engine.graphics.renderers.ITerrainRenderer;
 import engine.objects.Light;
+import engine.world.ChunkManager;
 import main.main;
 
 public class MasterRenderer<obj extends IChunkRenderer, terrain extends ITerrainRenderer, gui extends IGUIRendererBase> {
@@ -19,7 +20,7 @@ public class MasterRenderer<obj extends IChunkRenderer, terrain extends ITerrain
     }
 
     public void render(Light light) {
-        chunkRenderer.render(main.dimensionManager.getDimension(main.curDimension).chunks);
+        chunkRenderer.render(ChunkManager.getInstance().chunks);
         //terrainRenderer.render(main.world.chunks, light);
         guiRenderer.render(main.guis);
     }
