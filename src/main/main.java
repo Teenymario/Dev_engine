@@ -326,7 +326,7 @@ public class main implements Runnable {
         int shiftZ = (int) Math.ceil(camera.pos.z - lastChunkLoad.z) / 16;
 
         if(Math.abs(shiftX) >= 1 || Math.abs(shiftY) >= 1 || Math.abs(shiftZ) >= 1) {
-            chunkManager.loadChunks();
+            chunkManager.loadChunks(shiftX, shiftY, shiftZ);
             lastChunkLoad.redefine((int) Math.ceil(camera.pos.x), (int) Math.ceil(camera.pos.y), (int) Math.ceil(camera.pos.z));
         }
     }

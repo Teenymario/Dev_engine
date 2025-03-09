@@ -61,7 +61,7 @@ public class ChunkManager {
         firstGen();
     }
 
-    public void loadChunks() {
+    public void loadChunks(int shiftX, int shiftY, int shiftZ) {
         calcRange();
         ArrayList<Integer> indices = new ArrayList<>();
         Vector3i chunkPos = new Vector3i(0, 0, 0);
@@ -72,24 +72,25 @@ public class ChunkManager {
 
             //Little range check to see if chunks still fall within the render distance
             if(chunkPos.x < DISTANCE_RANGE_START_X) {
-                chunkPos.x = DISTANCE_RANGE_END_X;
+                chunkPos.x = DISTANCE_RANGE_END_X + ((shiftX == 0) ? 0 : shiftX + ((shiftX < 0) ? + 1 : -1));
+
                 shift = true;
             } else if(DISTANCE_RANGE_END_X < chunkPos.x) {
-                chunkPos.x = DISTANCE_RANGE_START_X;
+                chunkPos.x = DISTANCE_RANGE_START_X + ((shiftX == 0) ? 0 : shiftX + ((shiftX < 0) ? + 1 : -1));
                 shift = true;
             }
             if(chunkPos.y < DISTANCE_RANGE_START_Y) {
-                chunkPos.y = DISTANCE_RANGE_END_Y;
+                chunkPos.y = DISTANCE_RANGE_END_Y + ((shiftY == 0) ? 0 : shiftY + ((shiftY < 0) ? + 1 : -1));
                 shift = true;
             } else if(DISTANCE_RANGE_END_Y < chunkPos.y) {
-                chunkPos.y = DISTANCE_RANGE_START_Y;
+                chunkPos.y = DISTANCE_RANGE_START_Y + ((shiftY == 0) ? 0 : shiftY + ((shiftY < 0) ? + 1 : -1));
                 shift = true;
             }
             if(chunkPos.z < DISTANCE_RANGE_START_Z) {
-                chunkPos.z = DISTANCE_RANGE_END_Z;
+                chunkPos.z = DISTANCE_RANGE_END_Z + ((shiftZ == 0) ? 0 : shiftZ + ((shiftZ < 0) ? + 1 : -1));
                 shift = true;
             } else if(DISTANCE_RANGE_END_Z < chunkPos.z) {
-                chunkPos.z = DISTANCE_RANGE_START_Z;
+                chunkPos.z = DISTANCE_RANGE_START_Z + ((shiftZ == 0) ? 0 : shiftZ + ((shiftZ < 0) ? + 1 : -1));
                 shift = true;
             }
 
