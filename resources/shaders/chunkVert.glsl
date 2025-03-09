@@ -5,6 +5,7 @@ layout(location = 1) in vec2 tex;
 
 out vec2 passTextureCoord;
 out float visibility;
+out float distanceToCam;
 
 uniform ivec3 worldPos;
 uniform mat4 view;
@@ -20,5 +21,6 @@ void main() {
     passTextureCoord = tex;
 
     float distance = length(posRelativeToCam.xyz);
+    distanceToCam = distance * 0.6;
     visibility = exp(-pow((distance * density), gradient));
 }

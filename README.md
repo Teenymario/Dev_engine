@@ -17,9 +17,9 @@ This game engine will also be used for performance learning practices. Because I
 - [ ] Make a GUI system
 - [ ] Chunk rendering optimisations (greedy meshing)
 - [ ] Maybe implement full RGB color rendering
-- [ ] Introduce prototype terrain generation
+- [x] Introduce prototype terrain generation
 - [ ] Terrain gen optimisations
-- [ ] Mimic cubic chunks like world
+- [x] Mimic cubic chunks like world
 - [ ] Optimised world save format
 - [ ] Create a basic loading screen
 - [ ] Create a basic ticking system

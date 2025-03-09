@@ -81,7 +81,7 @@ public class main implements Runnable {
     public static int tickRate = 20;        //Per second
     public static int frameRate = 60;       //Per second
     public static double deltaTime = 0;
-    public static int renderDistance = 8;   //Default to 8
+    public static int renderDistance = 8;   //Default render distance if no config
     public static Vector3f lastChunkLoad;
 
     //Util
@@ -171,7 +171,8 @@ public class main implements Runnable {
     private void instantiate() {
         System.out.println("- Instantiate");
         window = new Window(WIDTH, HEIGHT, "Dev engine");
-        window.setBackgroundColor(0.474509804f, 0.650980392f, 1f);  //Imitate minecraft's sky color
+        //window.setBackgroundColor(0.474509804f, 0.650980392f, 1f);  //Imitate minecraft's sky color
+        window.setBackgroundColor(0.1f, 0.1f, 0.1f);  //Imitate a dark cave
         window.create();
         window.setIcon("resources/icon.png");
 
