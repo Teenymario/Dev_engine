@@ -52,7 +52,7 @@ public class NoiseGenerator extends GeneratorBase {
                 for(int y = 0; y < Chunk.SIZE; y++) {
                     noise = OpenSimplex2S.noise3_ImproveXZ(seed, (x + chunk.pos.x) * FREQUENCY, (y + chunk.pos.y) * FREQUENCY, (z + chunk.pos.z) * FREQUENCY);
 
-                    if(noise > 0.15f) {
+                    if(noise > 0.01f) {
                         block = 1;
                     } else {
                         block = 0;

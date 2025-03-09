@@ -21,6 +21,6 @@ void main() {
     passTextureCoord = tex;
 
     float distance = length(posRelativeToCam.xyz);
-    distanceToCam = distance * 0.6;
+    distanceToCam = distance * 0.3;
     visibility = exp(-pow((distance * density), gradient));
 }
