@@ -3,6 +3,8 @@ package engine.world.generators;
 import engine.world.noise.OpenSimplex2S;
 import engine.world.terrain.Chunk;
 
+import java.util.ArrayList;
+
 public class NoiseGenerator extends GeneratorBase {
 
     public NoiseGenerator(long seed) {
@@ -33,7 +35,7 @@ public class NoiseGenerator extends GeneratorBase {
         return this;
     }
 
-    public NoiseGenerator generateChunks(Chunk[] chunks, int[] indices, int xOff, int yOff, int zOff) {
+    public NoiseGenerator generateChunks(Chunk[] chunks, ArrayList<Integer> indices) {
         for(int i: indices) {
             internalGen(chunks[i]);
         }

@@ -28,6 +28,11 @@ public class Chunk {
         visualPos = new Vector3i(x * SIZE / 2, y * SIZE / 2, z * SIZE / 2);
     }
 
+    public void changePos(int x, int y, int z) {
+        pos.redefine(x * SIZE, y * SIZE, z * SIZE);
+        visualPos.redefine(x * SIZE / 2, y * SIZE / 2, z * SIZE / 2);
+    }
+
     public Chunk mesh() {
         mesh = ChunkMesher.meshSingleChunk(this);
         return this;

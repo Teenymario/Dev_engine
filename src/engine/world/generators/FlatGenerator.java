@@ -2,6 +2,8 @@ package engine.world.generators;
 
 import engine.world.terrain.Chunk;
 
+import java.util.ArrayList;
+
 public class FlatGenerator extends GeneratorBase {
 
     public FlatGenerator() {
@@ -32,7 +34,7 @@ public class FlatGenerator extends GeneratorBase {
         return this;
     }
 
-    public FlatGenerator generateChunks(Chunk[] chunks, int[] indices, int xOff, int yOff, int zOff) {
+    public FlatGenerator generateChunks(Chunk[] chunks, ArrayList<Integer> indices) {
         for(int i: indices) {
             internalGen(chunks[i]);
         }

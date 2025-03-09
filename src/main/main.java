@@ -143,8 +143,9 @@ public class main implements Runnable {
             update();
             handleInput();
 
+            tick();
             while (delta >= 1) {
-                tick();
+
                 ticks++;
                 delta--;
             }
@@ -252,8 +253,8 @@ public class main implements Runnable {
     private void postInit() {
         System.out.println("- Post Init");
 
-        lastChunkLoad = new Vector3f(0, 17, 0);
-        camera = new Camera(new Vector3f(0, 17, 0), new Vector3f(0, 1, 0));
+        lastChunkLoad = new Vector3f(0, 0, 0);
+        camera = new Camera(new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
 
         chunkManager = ChunkManager.getInstance();
         chunkManager.setup(curDimension, renderDistance);
@@ -312,13 +313,6 @@ public class main implements Runnable {
             objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
         }
 
-        /*if(Input.isKeyDown(GLFW.GLFW_KEY_R)) {
-            for(Chunk chunk : dimensionManager.getDimension(curDimension).chunks) {
-                TIME_S += 0.1D * deltaTime;
-                chunk.generate().remesh();
-            }
-        }*/
-
         if (lightLocked) {
             light.pos.x = camera.pos.x;
             light.pos.y = camera.pos.y;
@@ -327,13 +321,13 @@ public class main implements Runnable {
     }
 
     private void tick() {
-        int shiftX = (int) (camera.pos.x - lastChunkLoad.x) / 16;
-        int shiftY = (int) (camera.pos.y - lastChunkLoad.y) / 16;
-        int shiftZ = (int) (camera.pos.z - lastChunkLoad.z) / 16;
+        int shiftX = (int) Math.ceil(camera.pos.x - lastChunkLoad.x) / 16;
+        int shiftY = (int) Math.ceil(camera.pos.y - lastChunkLoad.y) / 16;
+        int shiftZ = (int) Math.ceil(camera.pos.z - lastChunkLoad.z) / 16;
 
         if(Math.abs(shiftX) >= 1 || Math.abs(shiftY) >= 1 || Math.abs(shiftZ) >= 1) {
-            chunkManager.loadChunks(shiftX, shiftY, shiftZ);
-            lastChunkLoad.redefine(camera.pos);
+            chunkManager.loadChunks();
+            lastChunkLoad.redefine((int) Math.ceil(camera.pos.x), (int) Math.ceil(camera.pos.y), (int) Math.ceil(camera.pos.z));
         }
     }
 
