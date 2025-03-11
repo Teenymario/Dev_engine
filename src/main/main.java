@@ -19,8 +19,8 @@ import engine.world.DimensionManager;
 import engine.world.GeneratorManager;
 import engine.world.dimension.Dimension;
 import engine.world.generators.FlatGenerator;
+import engine.world.generators.HeightmapGenerator;
 import engine.world.generators.NoiseGenerator;
-import engine.world.terrain.Chunk;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
@@ -135,7 +135,7 @@ public class main implements Runnable {
         int frames = 0;
         int ticks = 0;
 
-        while (!window.shouldClose() && !Input.isKeyDown(GLFW.GLFW_KEY_ESCAPE)) {
+        while(!window.shouldClose() && !Input.isKeyDown(GLFW.GLFW_KEY_ESCAPE)) {
             long now = System.nanoTime();
             deltaTime = (now - lastTime) / 1000000000.0;
             lastTime = now;
@@ -143,9 +143,8 @@ public class main implements Runnable {
             update();
             handleInput();
 
-            tick();
             while (delta >= 1) {
-
+                tick();
                 ticks++;
                 delta--;
             }
@@ -171,8 +170,8 @@ public class main implements Runnable {
     private void instantiate() {
         System.out.println("- Instantiate");
         window = new Window(WIDTH, HEIGHT, "Dev engine");
-        //window.setBackgroundColor(0.474509804f, 0.650980392f, 1f);  //Imitate minecraft's sky color
-        window.setBackgroundColor(0.1f, 0.1f, 0.1f);  //Imitate a dark cave
+        window.setBackgroundColor(0.474509804f, 0.650980392f, 1f);  //Imitate minecraft's sky color
+        //window.setBackgroundColor(0.1f, 0.1f, 0.1f);  //Imitate a dark cave
         window.create();
         window.setIcon("resources/icon.png");
 
@@ -233,11 +232,12 @@ public class main implements Runnable {
         generatorManager = GeneratorManager.getInstance();
         generatorManager.register(new FlatGenerator(), registryID, "flat");
         generatorManager.register(new NoiseGenerator(0), registryID, "noise");
+        generatorManager.register(new HeightmapGenerator(0, 0, 256), registryID,"heightmap");
         //Create world generators
 
         //Create world
         dimensionManager = DimensionManager.getInstance();
-        dimensionManager.registerDimension(new Dimension("earth", generatorManager.getGenerator("devEngine:noise")), registryID);
+        dimensionManager.registerDimension(new Dimension("earth", generatorManager.getGenerator("devEngine:heightmap")), registryID);
 
         //Create world
 
@@ -254,8 +254,8 @@ public class main implements Runnable {
     private void postInit() {
         System.out.println("- Post Init");
 
-        lastChunkLoad = new Vector3f(0, 0, 0);
-        camera = new Camera(new Vector3f(0, 0, 0), new Vector3f(0, 1, 0));
+        lastChunkLoad = new Vector3f(0, 100, 0);
+        camera = new Camera(new Vector3f(0, 100, 0), new Vector3f(0, 1, 0));
 
         chunkManager = ChunkManager.getInstance();
         chunkManager.setup(curDimension, renderDistance);
@@ -322,6 +322,7 @@ public class main implements Runnable {
     }
 
     private void tick() {
+        System.out.println(concat("(" + camera.pos.print() + ")"));
         int shiftX = (int) Math.ceil(camera.pos.x - lastChunkLoad.x) / 16;
         int shiftY = (int) Math.ceil(camera.pos.y - lastChunkLoad.y) / 16;
         int shiftZ = (int) Math.ceil(camera.pos.z - lastChunkLoad.z) / 16;
