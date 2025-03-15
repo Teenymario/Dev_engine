@@ -7,6 +7,7 @@ import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 
 import static engine.maths.Vector2.Vector2f;
 import static engine.maths.Vector3.Vector3i;
@@ -112,6 +113,10 @@ public class Shader {
     }
 
     public void setUniform(String name, int[] val) {
+        GL20.glUniform1iv(getUniformLoc(name), val);
+    }
+
+    public void setUniform(String name, IntBuffer val) {
         GL20.glUniform1iv(getUniformLoc(name), val);
     }
     //Setting uniform values

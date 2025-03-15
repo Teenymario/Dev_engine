@@ -322,7 +322,6 @@ public class main implements Runnable {
     }
 
     private void tick() {
-        System.out.println(concat("(" + camera.pos.print() + ")"));
         int shiftX = (int) Math.ceil(camera.pos.x - lastChunkLoad.x) / 16;
         int shiftY = (int) Math.ceil(camera.pos.y - lastChunkLoad.y) / 16;
         int shiftZ = (int) Math.ceil(camera.pos.z - lastChunkLoad.z) / 16;

@@ -1,5 +1,7 @@
 package engine.graphics;
 
+import engine.utils.MathUtils;
+
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -46,7 +48,7 @@ public class TextureAtlas {
             this.size += sortedTextures.get(size).size() * (size * size);
         }
 
-        size = nextPower((int) Math.ceil(Math.sqrt(size)));
+        size = MathUtils.nextPower((int) Math.ceil(Math.sqrt(size)));
         imgData = ByteBuffer.allocateDirect(4 * size * size);
 
         Vector2i pen = new Vector2i(0, 0);
@@ -119,14 +121,5 @@ public class TextureAtlas {
         }
 
         imgData.flip();
-    }
-
-    private int nextPower(int v) {
-        v |= v >> 1;
-        v |= v >> 2;
-        v |= v >> 4;
-        v |= v >> 8;
-        v |= v >> 16;
-        return ++v;
     }
 }

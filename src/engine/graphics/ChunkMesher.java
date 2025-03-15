@@ -116,8 +116,6 @@ public class ChunkMesher {
         startIndex = 0;
         vertexCount = 0;
 
-        //Java please give us a default .toPrimitive() function for giving back a primitive array like T[] with T being the type the arraylist was initialised as
-
         vertices.flip();
         texCoords.flip();
         indices.flip();
@@ -143,7 +141,7 @@ public class ChunkMesher {
         for (int i = 0; i < 6; i++) { // Always 6 indices per face
             int vertIndex = faceInds[i];
 
-            // Add vertex position
+            //Add vertex position
             vertices.put(cubeVerts[vertIndex * 3] + chunk.visualPos.x + x);
             vertices.put(cubeVerts[vertIndex * 3 + 1] + chunk.visualPos.y + y);
             vertices.put(cubeVerts[vertIndex * 3 + 2] + chunk.visualPos.z + z);
@@ -152,7 +150,7 @@ public class ChunkMesher {
             vertexCount++;
         }
 
-        // Assign indices relative to the new vertices
+        //Assign indices relative to the new vertices
         for (int i = 0; i < 6; i++) {
             indices.put(startIndex + i);
         }

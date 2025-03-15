@@ -53,7 +53,7 @@ public class HeightmapGenerator extends GeneratorBase {
             for(int z = 0; z < Chunk.SIZE; z++) {
                 for(int y = 0; y < Chunk.SIZE; y++) {
                     //Denormalise range -1 <-> 1 to base <-> top
-                    int topY = (int) Math.ceil(base + MAX_MIN * (OpenSimplex2S.noise2_ImproveX(seed, (chunk.pos.x + x) * FREQUENCY / 2, (chunk.pos.z + z) * FREQUENCY / 2) + 1));   //+ 1 used since (x - (-1)) = x + 1
+                    int topY = (int) Math.ceil(base + MAX_MIN * (OpenSimplex2S.noise2_ImproveX(seed, (chunk.pos.x + x) * FREQUENCY, (chunk.pos.z + z) * FREQUENCY) + 1));   //+ 1 used since (x - (-1)) = x + 1
                     if(chunk.pos.y + y == topY) {
                         chunk.setBlock(x, y, z, (short) 3);
                     } else if(chunk.pos.y + y > top) {

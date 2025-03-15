@@ -5,9 +5,7 @@ import engine.graphics.Shader;
 import engine.graphics.models.ChunkMesh;
 import engine.world.terrain.Chunk;
 import main.main;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL15;
-import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL46;
 
 //This will not be short lived
 public class ChunkRenderer implements IChunkRenderer {
@@ -26,9 +24,9 @@ public class ChunkRenderer implements IChunkRenderer {
             shader.setUniform("view", main.camera.viewMatrix);
             shader.setUniform("project", window.getProjectionMatrix());
             shader.setUniform("skyColor", window.background);
-            //GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-            GL11.glDrawElements(GL11.GL_TRIANGLES, chunk.mesh.indCount, GL11.GL_UNSIGNED_INT, 0);
-            //GL30.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+            //GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_LINE);
+            GL46.glDrawElements(GL46.GL_TRIANGLES, chunk.mesh.indCount, GL46.GL_UNSIGNED_INT, 0);
+            //GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_FILL);
         }
         unbindMesh();
     }
@@ -37,19 +35,19 @@ public class ChunkRenderer implements IChunkRenderer {
         //if(mesh.transparent) {
         //    disableCulling();
         //}
-        GL30.glBindVertexArray(mesh.vao); //Bind vertices used for drawing
-        GL30.glEnableVertexAttribArray(0); //Enable the pos attribute
-        GL30.glEnableVertexAttribArray(1); //Enable the tex attribute
-        GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, mesh.ibo); //Bind the indices used to connect vertices
+        GL46.glBindVertexArray(mesh.vao); //Bind vertices used for drawing
+        GL46.glEnableVertexAttribArray(0); //Enable the pos attribute
+        GL46.glEnableVertexAttribArray(1); //Enable the tex attribute
+        GL46.glBindBuffer(GL46.GL_ELEMENT_ARRAY_BUFFER, mesh.ibo); //Bind the indices used to connect vertices
         shader.bind(); //Bind the shader to the gpu
     }
 
     public void unbindMesh() {
         shader.unbind();
-        GL30.glDisableVertexAttribArray(1);
-        GL30.glDisableVertexAttribArray(0);
-        GL30.glBindVertexArray(0);
-        enableCulling();
+        GL46.glDisableVertexAttribArray(1);
+        GL46.glDisableVertexAttribArray(0);
+        GL46.glBindVertexArray(0);
+        //enableCulling();
     }
 
     public Shader getShader() {
