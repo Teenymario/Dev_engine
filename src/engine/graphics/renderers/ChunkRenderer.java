@@ -15,6 +15,7 @@ public class ChunkRenderer implements IChunkRenderer {
     public ChunkRenderer(Shader shader) {
         this.shader = shader;
         window = Window.getInstance();
+        enableCulling();
     }
 
     public void render(Chunk[] chunks) {
@@ -48,7 +49,6 @@ public class ChunkRenderer implements IChunkRenderer {
         GL46.glDisableVertexAttribArray(1);
         GL46.glDisableVertexAttribArray(0);
         GL46.glBindVertexArray(0);
-        //enableCulling();
     }
 
     public Shader getShader() {

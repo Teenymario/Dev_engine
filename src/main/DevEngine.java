@@ -19,6 +19,7 @@ import engine.world.dimension.Dimension;
 import engine.world.generators.FlatGenerator;
 import engine.world.generators.HeightmapGenerator;
 import engine.world.generators.NoiseGenerator;
+import engine.world.generators.oneblockGenerator;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
@@ -46,9 +47,6 @@ public class DevEngine implements Runnable {
     //System values
     public static String OS = System.getProperty("os.name").toLowerCase();
     public static int numCores = Runtime.getRuntime().availableProcessors();
-    static {
-        System.out.println(numCores);
-    }
 
     //Rendering values
     public final int WIDTH = 1280, HEIGHT = 760;
@@ -81,7 +79,7 @@ public class DevEngine implements Runnable {
     public static int tickRate = 20;        //Per second
     public static int frameRate = 60;       //Per second
     public static double deltaTime = 0;
-    public static int renderDistance = 16;   //Default render distance if no config
+    public static int renderDistance = 8;   //Default render distance if no config
     public static Vector3f lastChunkLoad;
 
     //Util
@@ -236,6 +234,7 @@ public class DevEngine implements Runnable {
         generatorManager.register(new FlatGenerator(), registryID, "flat");
         generatorManager.register(new NoiseGenerator(0), registryID, "noise");
         generatorManager.register(new HeightmapGenerator(0, 0, 256), registryID,"heightmap");
+        generatorManager.register(new oneblockGenerator(), registryID, "oneblock");
         //Create world generators
 
         //Create world

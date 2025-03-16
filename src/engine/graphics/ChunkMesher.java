@@ -24,31 +24,13 @@ public class ChunkMesher {
             -0.5f,  -0.5f,  0.5f
     };
 
-    private static final int[] northInds = {
-            4, 1, 5,
-            4, 0, 1
-    };
-    private static final int[] southInds = {
-            2, 7, 3,
-            2, 6, 7
-    };
-    private static final int[] westInds = {
-            6, 5, 7,
-            6, 4, 5
-    };
-    private static final int[] eastInds = {
-            0, 3, 1,
-            0, 2, 3
-    };
-    private static final int[] topInds = {
-            4, 2, 0,
-            4, 6, 2
-    };
-    private static final int[] bottomInds = {
-            1, 7, 5,
-            1, 3, 7
-    };
-    private static ArrayList<Short> nonSolid = new ArrayList<>();
+    private static final int[] northInds = { 4, 1, 5, 0 };
+    private static final int[] southInds = { 2, 7, 3, 6 };
+    private static final int[] westInds = { 6, 5, 7, 4 };
+    private static final int[] eastInds = { 0, 3, 1, 2 };
+    private static final int[] topInds = { 4, 2, 0, 6 };
+    private static final int[] bottomInds = { 1, 7, 5, 3 };
+    private static final ArrayList<Short> nonSolid = new ArrayList<>();
     static {
         nonSolid.add((short) 0);
         nonSolid.add((short) 5);
@@ -139,23 +121,27 @@ public class ChunkMesher {
     private void addFace(FloatBuffer vertices, IntBuffer indices, int[] faceInds, Chunk chunk, int x, int y, int z) {
         startIndex = vertexCount; // Save the starting index before adding new vertices
 
-        for (int i = 0; i < 6; i++) { // Always 6 indices per face
+        for (int i = 0; i < 4; i++) { // Only 4 unique vertices per face
             int vertIndex = faceInds[i];
 
-            //Add vertex position
+            // Add vertex position
             vertices.put(cubeVerts[vertIndex * 3] + chunk.visualPos.x + x);
             vertices.put(cubeVerts[vertIndex * 3 + 1] + chunk.visualPos.y + y);
             vertices.put(cubeVerts[vertIndex * 3 + 2] + chunk.visualPos.z + z);
-
-            // Track new vertex count
-            vertexCount++;
         }
 
-        //Assign indices relative to the new vertices
-        for (int i = 0; i < 6; i++) {
-            indices.put(startIndex + i);
-        }
+        //Assign indices for two triangles using shared vertices
+        indices.put(startIndex + 1);
+        indices.put(startIndex + 2);
+        indices.put(startIndex);
+
+        indices.put(startIndex + 1);
+        indices.put(startIndex);
+        indices.put(startIndex + 3);
+
+        vertexCount += 4; // Increment by 4 (instead of 6) since we're reusing vertices
     }
+
 
     private static void addTextureCoords(FloatBuffer texCoords, float[] coordData, int curFace) {
         texCoords.put(coordData[curFace * 4 + 2]);
@@ -164,11 +150,7 @@ public class ChunkMesher {
         texCoords.put(coordData[curFace * 4 + 3]);
         texCoords.put(coordData[curFace * 4 + 2]);
         texCoords.put(coordData[curFace * 4 + 3]);
-        texCoords.put(coordData[curFace * 4 + 2]);
-        texCoords.put(coordData[curFace * 4 + 1]);
         texCoords.put(coordData[curFace * 4]);
         texCoords.put(coordData[curFace * 4 + 1]);
-        texCoords.put(coordData[curFace * 4]);
-        texCoords.put(coordData[curFace * 4 + 3]);
     }
 }

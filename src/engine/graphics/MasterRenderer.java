@@ -3,7 +3,6 @@ package engine.graphics;
 import engine.graphics.renderers.IChunkRenderer;
 import engine.graphics.renderers.IGUIRendererBase;
 import engine.world.ChunkManager;
-import main.DevEngine;
 
 public class MasterRenderer<obj extends IChunkRenderer, gui extends IGUIRendererBase> {
 
@@ -17,7 +16,7 @@ public class MasterRenderer<obj extends IChunkRenderer, gui extends IGUIRenderer
 
     public void render() {
         chunkRenderer.render(ChunkManager.getInstance().chunks);
-        guiRenderer.render(DevEngine.guis);
+        //guiRenderer.render(DevEngine.guis);
     }
 
     public void destroy() {
