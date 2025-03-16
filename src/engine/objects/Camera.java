@@ -2,13 +2,13 @@ package engine.objects;
 
 import engine.IO.Input;
 import engine.maths.Matrix4f;
-import main.main;
+import main.DevEngine;
 import org.lwjgl.glfw.GLFW;
 
 import static engine.maths.Vector3.Vector3f;
 
-import static main.main.sensitivity;
-import static main.main.speed;
+import static main.DevEngine.sensitivity;
+import static main.DevEngine.speed;
 
 public class Camera {
     public Vector3f pos, rot;
@@ -27,7 +27,7 @@ public class Camera {
         newX = Input.getMouseX();
         newY = Input.getMouseY();
 
-        float adjustedSpeed = (float) (speed * main.deltaTime * (main.sprinting ? 2 : 1) * main.speedModifier);
+        float adjustedSpeed = (float) (speed * DevEngine.deltaTime * (DevEngine.sprinting ? 2 : 1) * DevEngine.speedModifier);
         float x = (float) Math.sin(Math.toRadians(rot.y)) * adjustedSpeed;
         float z = (float) Math.cos(Math.toRadians(rot.y)) * adjustedSpeed;
 
@@ -79,7 +79,7 @@ public class Camera {
         }
     }
 
-    public void updateVisual(GameObject target) {
+    /*public void updateVisual() {
         newX = Input.getMouseX();
         newY = Input.getMouseY();
 
@@ -120,7 +120,7 @@ public class Camera {
 
         oldX = newX;
         oldY = newY;
-    }
+    }*/
 
     public Vector3f getPos() {
         return pos;

@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Main Launch Wrapper" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="main.main" />
+    <option name="MAIN_CLASS_NAME" value="main.DevEngine" />
     <module name="LearningStuff" />
     <method v="2">
       <option name="Make" enabled="true" />

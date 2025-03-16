@@ -11,8 +11,18 @@ import java.nio.IntBuffer;
 public class ChunkMesh {
     public int vao, pbo, ibo, tbo;
     public int indCount;
+    private FloatBuffer vertices;
+    private IntBuffer indices;
+    private FloatBuffer texCoords;
 
+    //We cant use opengl in worker threads, moving the window context is going to be nasty
     public ChunkMesh(FloatBuffer vertices, IntBuffer indices, FloatBuffer texCoords) {
+        this.vertices = vertices;
+        this.indices = indices;
+        this.texCoords = texCoords;
+    }
+
+    public void upload() {
         vao = GL30.glGenVertexArrays();
         GL30.glBindVertexArray(vao);
 

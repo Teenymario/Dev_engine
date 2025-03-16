@@ -29,11 +29,6 @@ public class Chunk {
         visualPos.redefine(x * SIZE / 2, y * SIZE / 2, z * SIZE / 2);
     }
 
-    public Chunk mesh() {
-        mesh = ChunkMesher.meshSingleChunk(this);
-        return this;
-    }
-
     public short getBlock(int x, int y, int z) {
         try {
             return blocks[(y << SHIFT_DOUBLE) + (z << SHIFT) + x];

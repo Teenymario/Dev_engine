@@ -2,32 +2,26 @@ package engine.graphics;
 
 import engine.graphics.renderers.IChunkRenderer;
 import engine.graphics.renderers.IGUIRendererBase;
-import engine.graphics.renderers.ITerrainRenderer;
-import engine.objects.Light;
 import engine.world.ChunkManager;
-import main.main;
+import main.DevEngine;
 
-public class MasterRenderer<obj extends IChunkRenderer, terrain extends ITerrainRenderer, gui extends IGUIRendererBase> {
+public class MasterRenderer<obj extends IChunkRenderer, gui extends IGUIRendererBase> {
 
     private obj chunkRenderer;
-    private terrain terrainRenderer;
     private gui guiRenderer;
 
-    public MasterRenderer(obj objRenderer, terrain terrainRenderer, gui guiRenderer) {
+    public MasterRenderer(obj objRenderer, gui guiRenderer) {
         this.chunkRenderer = objRenderer;
-        this.terrainRenderer = terrainRenderer;
         this.guiRenderer = guiRenderer;
     }
 
-    public void render(Light light) {
+    public void render() {
         chunkRenderer.render(ChunkManager.getInstance().chunks);
-        //terrainRenderer.render(main.world.chunks, light);
-        guiRenderer.render(main.guis);
+        guiRenderer.render(DevEngine.guis);
     }
 
     public void destroy() {
         chunkRenderer.getShader().destroy();
-        terrainRenderer.getShader().destroy();
         guiRenderer.getShader().destroy();
     }
 

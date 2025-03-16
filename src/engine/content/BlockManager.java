@@ -1,6 +1,8 @@
 package engine.content;
 import engine.graphics.models.BlockModel;
 import engine.graphics.models.ModelType;
+import engine.utils.LogLevel;
+import main.DevEngine;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -8,8 +10,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import static main.main.concat;
-import static main.main.resourceManager;
+import static main.DevEngine.concat;
+import static main.DevEngine.resourceManager;
 
 //Singleton class used to store all the blocks within the game and their registry names.
 //Also provides necessary functions to register blocks and to provide block textures for the block texture atlas
@@ -28,7 +30,9 @@ public class BlockManager {
             blocks.add(block);
             block.setID((short) blocks.size());
 
-            System.out.println(concat("Registered block ", registry));
+            if(DevEngine.logLevel == LogLevel.DEBUG) {
+                System.out.println(concat("Registered block ", registry));
+            }
         } else {
             throw new IllegalStateException(concat("Registry \"", registry, "\" already exists | BlockManager"));
         }

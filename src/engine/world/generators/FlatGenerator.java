@@ -42,6 +42,14 @@ public class FlatGenerator extends GeneratorBase {
         return this;
     }
 
+    public FlatGenerator generateChunks(Chunk[] chunks, int[] indices) {
+        for(int i: indices) {
+            internalGen(chunks[i]);
+        }
+
+        return this;
+    }
+
     private void internalGen(Chunk chunk) {
         int y1;
 
@@ -62,7 +70,5 @@ public class FlatGenerator extends GeneratorBase {
                 }
             }
         }
-
-        chunk.mesh();
     }
 }

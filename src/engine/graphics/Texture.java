@@ -7,7 +7,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-import static main.main.concat;
+import static main.DevEngine.concat;
 
 //Simple class to store openGL texture ID and bits of data from said texture
 public class Texture {

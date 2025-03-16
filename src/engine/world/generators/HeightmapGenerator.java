@@ -48,6 +48,14 @@ public class HeightmapGenerator extends GeneratorBase {
         return this;
     }
 
+    public HeightmapGenerator generateChunks(Chunk[] chunks, int[] indices) {
+        for(int i: indices) {
+            internalGen(chunks[i]);
+        }
+
+        return this;
+    }
+
     private void internalGen(Chunk chunk) {
         for(int x = 0; x < Chunk.SIZE; x++) {
             for(int z = 0; z < Chunk.SIZE; z++) {
@@ -64,7 +72,5 @@ public class HeightmapGenerator extends GeneratorBase {
                 }
             }
         }
-
-        chunk.mesh();
     }
 }

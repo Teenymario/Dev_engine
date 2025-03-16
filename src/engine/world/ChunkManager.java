@@ -1,18 +1,23 @@
 package engine.world;
 
+import engine.graphics.ChunkMesher;
 import engine.world.generators.GeneratorBase;
 import engine.world.terrain.Chunk;
+import main.DevEngine;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static engine.maths.Vector3.Vector3i;
 
-import static main.main.camera;
+import static main.DevEngine.camera;
 
 public class ChunkManager {
     private static final ChunkManager singleton = new ChunkManager();
     public String world;
-    public GeneratorBase generator;
+    public volatile GeneratorBase generator;
     public int DISTANCE;
     public int DISTANCE_SQUARED;
     public int DISTANCE_CUBED;
@@ -26,7 +31,14 @@ public class ChunkManager {
     public int DISTANCE_RANGE_START_Z;
     public int DISTANCE_RANGE_END_Z;
 
-    public Chunk[] chunks;
+    public volatile Chunk[] chunks;
+
+    //Multithreaded generation
+    public int threadCount = DevEngine.numCores / 2;
+    public ExecutorService threads;
+    public ArrayList<ArrayList<Integer>> workloads;
+    public volatile int runningThreads;
+    public ChunkMesher[] meshers;   //We make separate "meshers" just for those 2 variables, because multiple threads like to mess with static variables
 
     public void setup(String registry, int distance) {
         DISTANCE = distance;
@@ -39,6 +51,17 @@ public class ChunkManager {
         generator = DimensionManager.getInstance().getDimension(registry).generator;
 
         chunks = new Chunk[DISTANCE_CUBED];
+
+        threads = Executors.newFixedThreadPool(threadCount);
+
+        workloads = new ArrayList<>();
+        meshers = new ChunkMesher[threadCount];
+
+        for(int i = 0; i < threadCount; i++) {
+            workloads.add(new ArrayList<>());
+            meshers[i] = new ChunkMesher();
+        }
+
         firstGen();
     }
 
@@ -101,7 +124,35 @@ public class ChunkManager {
             }
         }
 
-        generator.generateChunks(chunks, indices);
+        //Distribute chunks to threads
+        int counter = 0;
+        for(int i: indices) {
+            workloads.get(counter).add(i);
+
+            if(++counter == threadCount) {
+                counter = 0;
+            }
+        }
+
+        runningThreads = threadCount;
+        for(int i = 0; i < threadCount; i++) {
+            int index = i;
+            threads.submit(() -> {
+                generator.generateChunks(chunks, workloads.get(index));
+                for(int j: workloads.get(index)) {
+                    chunks[j].mesh = meshers[index].meshSingleChunk(chunks[j]);
+                }
+
+                DevEngine.GPUTasks.add(() -> {
+                    for(int mesh : workloads.get(index)) {
+                        chunks[mesh].mesh.upload();
+                    }
+                    workloads.get(index).clear();
+                });
+
+                runningThreads--;
+            });
+        }
     }
 
     private void firstGen() {
@@ -120,6 +171,10 @@ public class ChunkManager {
         }
 
         generator.generateChunks(chunks);
+        for(Chunk chunk: chunks) {
+            chunk.mesh = meshers[0].meshSingleChunk(chunk);
+            chunk.mesh.upload();
+        }
     }
 
     public void calcRange() {

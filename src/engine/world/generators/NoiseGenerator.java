@@ -43,6 +43,14 @@ public class NoiseGenerator extends GeneratorBase {
         return this;
     }
 
+    public NoiseGenerator generateChunks(Chunk[] chunks, int[] indices) {
+        for(int i: indices) {
+            internalGen(chunks[i]);
+        }
+
+        return this;
+    }
+
     private void internalGen(Chunk chunk) {
         short block;
         float noise;
@@ -62,7 +70,5 @@ public class NoiseGenerator extends GeneratorBase {
                 }
             }
         }
-
-        chunk.mesh();
     }
 }

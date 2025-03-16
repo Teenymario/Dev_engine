@@ -14,7 +14,7 @@ public class RendererInjector {
             @Override
             public MethodVisitor visitMethod(int access, String name, String descriptor, String signature, String[] exceptions) {
                 MethodVisitor methodVisitor = super.visitMethod(access, name, descriptor, signature, exceptions);
-                if ("render".equals(name) && "(Lengine/objects/Light;)V".equals(descriptor)) {
+                if ("render".equals(name) && "()V".equals(descriptor)) {
                     // Insert println statement at the beginning of the render method
                     return new MethodVisitor(Opcodes.ASM7, methodVisitor) {
                         @Override

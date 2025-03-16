@@ -4,7 +4,7 @@ import engine.IO.Window;
 import engine.graphics.Shader;
 import engine.graphics.models.ChunkMesh;
 import engine.world.terrain.Chunk;
-import main.main;
+import main.DevEngine;
 import org.lwjgl.opengl.GL46;
 
 //This will not be short lived
@@ -21,11 +21,12 @@ public class ChunkRenderer implements IChunkRenderer {
         for(Chunk chunk : chunks) {
             bindMesh(chunk.mesh);
             shader.setUniform("worldPos", chunk.visualPos);
-            shader.setUniform("view", main.camera.viewMatrix);
+            shader.setUniform("view", DevEngine.camera.viewMatrix);
             shader.setUniform("project", window.getProjectionMatrix());
             shader.setUniform("skyColor", window.background);
             //GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_LINE);
             GL46.glDrawElements(GL46.GL_TRIANGLES, chunk.mesh.indCount, GL46.GL_UNSIGNED_INT, 0);
+
             //GL46.glPolygonMode(GL46.GL_FRONT_AND_BACK, GL46.GL_FILL);
         }
         unbindMesh();

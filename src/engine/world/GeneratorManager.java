@@ -1,10 +1,12 @@
 package engine.world;
 
+import engine.utils.LogLevel;
 import engine.world.generators.GeneratorBase;
+import main.DevEngine;
 
 import java.util.ArrayList;
 
-import static main.main.concat;
+import static main.DevEngine.concat;
 
 //This class exists basically just to let you retrieve generators with a registry key
 public class GeneratorManager {
@@ -21,7 +23,9 @@ public class GeneratorManager {
             registries.add(registry);
             generators.add(generator);
 
-            System.out.println(concat("Registered block ", registry));
+            if(DevEngine.logLevel == LogLevel.DEBUG) {
+                System.out.println(concat("Registered generator ", registry));
+            }
         } else {
             throw new IllegalStateException(concat("Registry \"", registry, "\" already exists | BlockManager"));
         }

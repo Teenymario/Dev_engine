@@ -8,8 +8,8 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 
-import static main.main.resourceManager;
-import static main.main.blockManager;
+import static main.DevEngine.resourceManager;
+import static main.DevEngine.blockManager;
 
 public class ChunkMesher {
     //8 vertices for a full cube
@@ -48,16 +48,17 @@ public class ChunkMesher {
             1, 7, 5,
             1, 3, 7
     };
-    private static int startIndex = 0; //Leave these two here because I don't like constant variable declaration in loops
-    private static int vertexCount = 0;
     private static ArrayList<Short> nonSolid = new ArrayList<>();
     static {
         nonSolid.add((short) 0);
         nonSolid.add((short) 5);
     }
 
+    private int startIndex = 0; //Leave these two here because I don't like constant variable declaration in loops
+    private int vertexCount = 0;
+
     //It got so terrible I had to ask chatGPT for help, leaving the comments in so I can learn from this
-    public static ChunkMesh meshSingleChunk(Chunk chunk) {
+    public ChunkMesh meshSingleChunk(Chunk chunk) {
         FloatBuffer vertices = MemoryUtil.memAllocFloat(Chunk.SIZE_CUBED * 24);  //6 faces, 4 vertices per face
         IntBuffer indices = MemoryUtil.memAllocInt(Chunk.SIZE_CUBED * 36);       //6 faces, 6 indices per face
         FloatBuffer texCoords = MemoryUtil.memAllocFloat(Chunk.SIZE_CUBED * 48); //two floats per vertex
@@ -135,7 +136,7 @@ public class ChunkMesher {
         return nonSolid.contains(neighbor);
     }
 
-    private static void addFace(FloatBuffer vertices, IntBuffer indices, int[] faceInds, Chunk chunk, int x, int y, int z) {
+    private void addFace(FloatBuffer vertices, IntBuffer indices, int[] faceInds, Chunk chunk, int x, int y, int z) {
         startIndex = vertexCount; // Save the starting index before adding new vertices
 
         for (int i = 0; i < 6; i++) { // Always 6 indices per face

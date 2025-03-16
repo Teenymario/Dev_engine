@@ -2,19 +2,13 @@ package engine.IO;
 
 import engine.graphics.Image;
 import engine.maths.Matrix4f;
-import main.main;
+import main.DevEngine;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.stb.STBImage;
-import org.lwjgl.system.MemoryStack;
-import org.newdawn.slick.opengl.TextureLoader;
-
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
 
 import static engine.maths.Vector3.Vector3f;
 
@@ -37,7 +31,7 @@ public class Window {
         this.width = width;
         this.height = height;
         this.title = title;
-        projection = Matrix4f.projection(main.fov, (float) width / (float) height, main.near, main.far);
+        projection = Matrix4f.projection(DevEngine.fov, (float) width / (float) height, DevEngine.near, DevEngine.far);
         singleton = this;
     }
 

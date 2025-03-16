@@ -1,11 +1,13 @@
 package engine.graphics;
 
+import engine.utils.LogLevel;
+import main.DevEngine;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL30;
 
 import java.util.ArrayList;
 
-import static main.main.concat;
+import static main.DevEngine.concat;
 
 public class ResourceManager {
     private static final ResourceManager singleton = new ResourceManager();
@@ -23,7 +25,9 @@ public class ResourceManager {
             textures.add(new Texture(path));
             registries.add(registry);
 
-            System.out.println(concat("Registered texture ", registry));
+            if(DevEngine.logLevel == LogLevel.DEBUG) {
+                System.out.println(concat("Registered texture ", registry));
+            }
         } else {
             throw new IllegalStateException(concat("Registry \"", registry, "\" already exists | ResourceManager"));
         }

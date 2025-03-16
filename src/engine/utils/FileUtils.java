@@ -6,8 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
 
-import static main.main.stringer;
-import static main.main.concat;
+import static main.DevEngine.stringer;
+import static main.DevEngine.concat;
 
 public class FileUtils {
 

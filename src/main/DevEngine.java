@@ -7,13 +7,11 @@ import engine.content.blocks.*;
 import engine.graphics.*;
 import engine.graphics.renderers.ChunkRenderer;
 import engine.graphics.renderers.GUIRenderer;
-import engine.graphics.renderers.TerrainRenderer;
 import engine.objects.Camera;
 import engine.objects.GUITexture;
-import engine.objects.GameObject;
-import engine.objects.Light;
 import engine.utils.FileCallback;
 import engine.utils.FileUtils;
+import engine.utils.LogLevel;
 import engine.world.ChunkManager;
 import engine.world.DimensionManager;
 import engine.world.GeneratorManager;
@@ -24,26 +22,33 @@ import engine.world.generators.NoiseGenerator;
 import org.lwjgl.glfw.GLFW;
 
 import java.io.File;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Queue;
 
 import static engine.maths.Vector3.Vector3f;
 
-public class main implements Runnable {
+public class DevEngine implements Runnable {
     //Core values
-    public Thread game;
+    public Thread mainThread;
+    public Thread meshingThread;
+    public static Queue<Runnable> GPUTasks = new ArrayDeque<>();
+
     public Window window;
-    public Shader blockShader;
-    public Shader terrainShader;
+    public Shader chunkShader;
     public Shader guiShader;
     public ChunkRenderer chunkRenderer;
-    public TerrainRenderer terrainRenderer;
     public GUIRenderer guiRenderer;
-    public MasterRenderer<ChunkRenderer, TerrainRenderer, GUIRenderer> masterRenderer;
-    public static List<GameObject> objectMasterList = new ArrayList<>();
-    public static List<Mesh> meshes = new ArrayList<>();
+    public MasterRenderer<ChunkRenderer, GUIRenderer> masterRenderer;
     public static List<GUITexture> guis = new ArrayList<>();
+
+    //System values
     public static String OS = System.getProperty("os.name").toLowerCase();
+    public static int numCores = Runtime.getRuntime().availableProcessors();
+    static {
+        System.out.println(numCores);
+    }
 
     //Rendering values
     public final int WIDTH = 1280, HEIGHT = 760;
@@ -56,22 +61,17 @@ public class main implements Runnable {
     public boolean thirdPerson;
     public static boolean sprinting;
     public static float speedModifier;
-    public static boolean lightLocked;
 
     //Game ticking
     public static long lastTime;
 
     //GameObjects
-    public GameObject object;
     public static Camera camera;
-    public Light light;
-    public GameObject lightCube;
 
     //Game world
     public static final String registryID = "devEngine";        //Allow for easier modding
     public static ResourceManager resourceManager;
     public static BlockManager blockManager;
-    //public static ArrayList<ItemBase> contentItems = new ArrayList<>();
     public static DimensionManager dimensionManager;
     public static ChunkManager chunkManager;
     public static GeneratorManager generatorManager;
@@ -81,12 +81,12 @@ public class main implements Runnable {
     public static int tickRate = 20;        //Per second
     public static int frameRate = 60;       //Per second
     public static double deltaTime = 0;
-    public static int renderDistance = 8;   //Default render distance if no config
+    public static int renderDistance = 16;   //Default render distance if no config
     public static Vector3f lastChunkLoad;
 
     //Util
     public static final StringBuilder stringer = new StringBuilder();    //Please use the concat function. If you use this directly make sure to run .setLength(0); on the thing after you finish
-    public static double TIME_S = 0D;
+    public static LogLevel logLevel = LogLevel.INFO;
 
     public static String concat(Object... args) {
         for(Object arg : args) {
@@ -100,8 +100,8 @@ public class main implements Runnable {
     //Util
 
     public void start() {
-        game = new Thread(this, "game");
-        game.start();
+        mainThread = new Thread(this, "main");
+        mainThread.start();
     }
 
     public void run() {
@@ -143,6 +143,13 @@ public class main implements Runnable {
             update();
             handleInput();
 
+            //Execute GPU tasks from worker threads
+            if(chunkManager.runningThreads == 0) {
+                while (!GPUTasks.isEmpty()) {
+                    GPUTasks.poll().run();
+                }
+            }
+
             while (delta >= 1) {
                 tick();
                 ticks++;
@@ -175,19 +182,15 @@ public class main implements Runnable {
         window.create();
         window.setIcon("resources/icon.png");
 
-        blockShader = new Shader("/shaders/chunkVert.glsl", "/shaders/chunkFrag.glsl");
-        blockShader.create();
-        chunkRenderer = new ChunkRenderer(blockShader);
-
-        terrainShader = new Shader("/shaders/terrainVert.glsl", "/shaders/terrainFrag.glsl");
-        terrainShader.create();
-        terrainRenderer = new TerrainRenderer(terrainShader);
+        chunkShader = new Shader("/shaders/chunkVert.glsl", "/shaders/chunkFrag.glsl");
+        chunkShader.create();
+        chunkRenderer = new ChunkRenderer(chunkShader);
 
         guiShader = new Shader("/shaders/guiVert.glsl", "/shaders/guiFrag.glsl");
         guiShader.create();
         guiRenderer = new GUIRenderer(guiShader);
 
-        masterRenderer = new MasterRenderer<>(chunkRenderer, terrainRenderer, guiRenderer);
+        masterRenderer = new MasterRenderer<>(chunkRenderer, guiRenderer);
     }
 
     //Loading game resources and graphics
@@ -263,7 +266,6 @@ public class main implements Runnable {
         thirdPerson = false;
         speedModifier = 1;
         sprinting = false;
-        lightLocked = false;
         lastTime = System.currentTimeMillis();
     }
 
@@ -276,49 +278,9 @@ public class main implements Runnable {
             camera.setPos(new Vector3f(0, 1, 0));
         }
         if (Input.isKeyDown(GLFW.GLFW_KEY_F5)) thirdPerson = !thirdPerson;
-        if (Input.isKeyDown(GLFW.GLFW_KEY_F6)) {
-            lightLocked = !lightLocked;
-            if (lightLocked) {
-                objectMasterList.get(0).setScale(0, 0, 0);
-            } else {
-                objectMasterList.get(0).setScale(1, 1, 1);
-                objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
-            }
-        }
         if (Input.isKeyDown(GLFW.GLFW_KEY_Q)) speedModifier += (float) (2.5f * deltaTime);
         if (Input.isKeyDown(GLFW.GLFW_KEY_E)) speedModifier -= (float) (2.5f * deltaTime);
         sprinting = Input.isKeyDown(GLFW.GLFW_KEY_LEFT_CONTROL);
-
-        if (Input.isKeyDown(GLFW.GLFW_KEY_UP)) {
-            light.pos.z -= 0.025f * speedModifier;
-            objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
-        }
-        if (Input.isKeyDown(GLFW.GLFW_KEY_DOWN)) {
-            light.pos.z += 0.025f * speedModifier;
-            objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
-        }
-        if (Input.isKeyDown(GLFW.GLFW_KEY_LEFT)) {
-            light.pos.x -= 0.025f * speedModifier;
-            objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
-        }
-        if (Input.isKeyDown(GLFW.GLFW_KEY_RIGHT)) {
-            light.pos.x += 0.025f * speedModifier;
-            objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
-        }
-        if (Input.isKeyDown(GLFW.GLFW_KEY_RIGHT_SHIFT)) {
-            light.pos.y += 0.025f * speedModifier;
-            objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
-        }
-        if (Input.isKeyDown(GLFW.GLFW_KEY_RIGHT_CONTROL)) {
-            light.pos.y -= 0.025f * speedModifier;
-            objectMasterList.get(0).setPos(light.pos.x, light.pos.y, light.pos.z);
-        }
-
-        if (lightLocked) {
-            light.pos.x = camera.pos.x;
-            light.pos.y = camera.pos.y;
-            light.pos.z = camera.pos.z;
-        }
     }
 
     private void tick() {
@@ -335,7 +297,7 @@ public class main implements Runnable {
     private void update() {
         window.update();
         if(thirdPerson) {
-            camera.updateVisual(object);
+            //camera.updateVisual(object);
         } else {
             camera.updateVisual();
         }
@@ -343,7 +305,7 @@ public class main implements Runnable {
 
     private void render() {
         //3D scene
-        masterRenderer.render(light);
+        masterRenderer.render();
 
         //2D HUD
 
@@ -352,11 +314,7 @@ public class main implements Runnable {
 
     private void close(boolean error) {
         window.destroy();
-        for(Mesh mesh : meshes) {
-            mesh.destroy();
-        }
-        blockShader.destroy();
-        terrainShader.destroy();
+        chunkShader.destroy();
         guiShader.destroy();
         masterRenderer.destroy();
 
@@ -370,6 +328,6 @@ public class main implements Runnable {
     }
 
     public static void main(String[] args) {
-        new main().start();
+        new DevEngine().start();
     }
 }

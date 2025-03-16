@@ -13,6 +13,7 @@ public abstract class GeneratorBase {
     public abstract GeneratorBase generateChunk(Chunk chunk);
     public abstract GeneratorBase generateChunks(Chunk[] chunks);
     public abstract GeneratorBase generateChunks(Chunk[] chunks, int offset, int length);
+    public abstract GeneratorBase generateChunks(Chunk[] chunks, int[] indices);
     public abstract GeneratorBase generateChunks(Chunk[] chunks, ArrayList<Integer> indices);
 
 }
