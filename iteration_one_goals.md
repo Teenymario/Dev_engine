@@ -1,0 +1,26 @@
+# Development goals
+These are the development goals that the first iteration of the game engine had achieved before I broke it and decided that it is better to restart from scratch rather than rewrite the same codebase for the 3rd time
+- [x] Create a tick system, allow for no framerate cap
+- [x] Create instantiate, pre init, init and post init loading phases
+- [x] Create a class to manage the registering, storing and usage of blocks. Create registry names for blocks.
+- [x] Create basic resource system (similar to that of minecraft)
+- [x] Create texture atlas
+- [x] Create new rendering pipeline
+- [x] Create a simple 16x16x16 chunk of minecraft blocks
+- [x] Create a culled chunk mesher
+- [x] Implement multithreading
+- [ ] Optimise via single world mesh
+- [ ] Make a GUI system
+- [ ] Chunk rendering optimisations (greedy meshing)
+- [ ] Maybe implement full RGB color rendering
+- [x] Introduce prototype terrain generation
+- [ ] Terrain gen optimisations
+- [x] Mimic cubic chunks like world
+- [ ] Optimised world save format
+- [ ] Create a basic loading screen
+- [ ] Create a basic ticking system
+- [ ] Create a basic modloader for the game using ASM bytecode manipulation
+- [ ] Create efficient and optimised modding api that mimics/is similar to that of forge 1.12.2
+- [ ] Create a basic mod
+- [ ] Use bytecode manipulation from the modding api to manipulate and rewrite code within the game
+- [ ] Modify a mod using another mod
