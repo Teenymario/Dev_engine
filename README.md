@@ -5,23 +5,27 @@ This application will also serve as testing grounds for the extended universe mo
 ## Performance  
 This game engine will also be used for performance learning practices. Because I will need to know all about optimizing java code and game engines for when I make the ####### 1.12.2 optimized mod loader I can identify issues in the game and fix them efficiently
 
+## Iteration
+This is the second iteration of this project, since the older version I had scrapped to `old_src` since it would be better to reprogram from scratch rather than rewriting the same scrappy codebase for the 3rd time.
+
 # Development goals
-- [x] Create a tick system, allow for no framerate cap
-- [x] Create instantiate, pre init, init and post init loading phases
-- [x] Create a class to manage the registering, storing and usage of blocks. Create registry names for blocks.
-- [x] Create basic resource system (similar to that of minecraft)
-- [x] Create texture atlas
-- [x] Create new rendering pipeline
-- [x] Create a simple 16x16x16 chunk of minecraft blocks
-- [x] Create a culled chunk mesher
-- [x] Implement multithreading
+Iteration 2
+- [ ] Create a tick system, allow for no framerate cap
+- [ ] Create instantiate, pre init, init and post init loading phases
+- [ ] Create a class to manage the registering, storing and usage of blocks. Create registry names for blocks.
+- [ ] Create basic resource system (similar to that of minecraft)
+- [ ] Create texture atlas
+- [ ] Create new rendering pipeline
+- [ ] Create a simple 16x16x16 chunk of minecraft blocks
+- [ ] Create a culled chunk mesher
+- [ ] Implement multithreading
 - [ ] Optimise via single world mesh
 - [ ] Make a GUI system
 - [ ] Chunk rendering optimisations (greedy meshing)
 - [ ] Maybe implement full RGB color rendering
-- [x] Introduce prototype terrain generation
+- [ ] Introduce prototype terrain generation
 - [ ] Terrain gen optimisations
-- [x] Mimic cubic chunks like world
+- [ ] Mimic cubic chunks like world
 - [ ] Optimised world save format
 - [ ] Create a basic loading screen
 - [ ] Create a basic ticking system
