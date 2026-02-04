@@ -16,6 +16,8 @@ The loading stages are set up in specific order since preceding loading stages w
 
 This here is how the mod loader that we make as an experiment will attach into the main game and load it's content. The mod loader will have a scheduling system and specific loading stages in which mods will be more able than forge (this will eventually become the blueprint for the new mod loader for 1.12.2 I have planned in mind). When a mod loads in a specific phase of the game it is "registered" to load during that phase
 
+Note: For those who dont know, IMC is inter mod communication, which is how mods communicate in order to create cross mod compatability
+
 - PreLoad (Mods here will run before the game is even started, as in, before the `public static void main` of the whole game)
 - PreLoadASM (Same as before, but isolated specifically for any and all ASM bytecode manipulations)
 - CoreSetup (Mods register to load during the game's CoreSetup phase)
